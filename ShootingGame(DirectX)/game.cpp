@@ -8,14 +8,20 @@
 #include "input.h"
 #include "sprite.h"
 #include "texture.h"
+#include "player.h"
+#include "debug_font.h"
 
 int g_FrameCount;				//フレームカウンター
 int g_FPSBaseFrameCount;		//FPS計測用フレームカウンター
 double g_FPSBaseTime;			//FPS計測用時間
 float g_FPS;					//FPS
 
+static int g_BG_textureID;
+static int g_gameBG_textureID;
+bool inTitlePhrase, inGamePhrase;
+
 void gameInit() {
-	
+	DebugFont_Initialize();
 	SystemTimer_Initialize();
 	SystemTimer_Start();
 
@@ -24,7 +30,16 @@ void gameInit() {
 	g_FPS = 0.0;
 
 	inTitlePhrase = true;
-	inGamePhrace = false;
+	inGamePhrase = false;
+
+	playerInit();
+
+	Texture_SetLoadFile("Assets/Textures/background.png", SCREEN_WIDTH, SCREEN_HEIGHT);
+	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
+	Texture_Load();
+
+	g_BG_textureID = Texture_GetID("Assets/Textures/background.png");
+	g_gameBG_textureID = Texture_GetID("Assets/Textures/gameBG.png");
 
 	LPDIRECT3DDEVICE9 myDevice = MyDirect3D_GetDevice();
 
@@ -32,15 +47,12 @@ void gameInit() {
 	myDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);	//可以控制polygon vertex的alpha值來讓texture變透明
 	myDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	myDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	//g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG2);	//可以讓texture只顯示polygon color
 
 	//透明を設定できるセッティング
 	myDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	myDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	myDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-
-	//Texture_SetLoadFile("Asset/Texture/endSign.png", 720, 720);		//ID 0
-	//Texture_Load();
+	
 }
 
 void gameUninit() {
@@ -58,46 +70,21 @@ void gameUpdate() {
 		g_FPSBaseFrameCount = g_FrameCount;
 	}
 	
-	if (inTitlePhrase) {
+	playerUpdate();
+
+	/*if (inTitlePhrase) {
 
 	}
-	else if (!inTitlePhrase && inGamePhrace) {
+	else if (!inTitlePhrase && inGamePhrase) {
 
-	}
+	}*/
 
 }
 
 void gameDraw() {
-	LPDIRECT3DDEVICE9 myDevice = MyDirect3D_GetDevice();
 	
-	/*if (g_FrameCount < 1750) {
-		//Draw BackGround
-		myDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, BackGround, sizeof(Vertex2d));
+	Sprite_Draw(g_BG_textureID, SCREEN_WIDTH/2.f, SCREEN_HEIGHT/2.f);
+	Sprite_Draw(g_gameBG_textureID, 50.f + GAME_WIDTH/2.f, SCREEN_HEIGHT/2.f);
 
-		//Draw field
-		for (int i = 0; i < 2; i++) {
-			myDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, sportsField[i], sizeof(Vertex2d));
-		}
-		myDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, grassField, sizeof(Vertex2d));
-
-		//Draw track lines
-		for (int i = 0; i < 8; i++) {
-			myDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, trackLines[i], sizeof(Vertex2d));
-		}
-		for (int i = 0; i < 4; i++) {
-			myDevice->DrawPrimitiveUP(D3DPT_LINELIST, 2, farTrackLines[i], sizeof(Vertex2d));
-		}
-
-		animationDraw();
-	}
-
-	if (g_FrameCount >= 1750) {
-		myDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, blackCover, sizeof(Vertex2d));
-
-		if (g_FrameCount > 1800)
-			Sprite_Draw(6, 640, 360);
-	}*/
-
-
-
+	playerDraw();
 }

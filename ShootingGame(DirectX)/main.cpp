@@ -10,12 +10,20 @@
 #include "system_timer.h"
 #include "input.h"
 #include "game.h"
+#include "texture.h"
 
 #define CLASS_NAME		"GameWindow"
 #define WINDOW_CAPTION	"弾幕シューティングゲーム"
 
 LPDIRECT3DDEVICE9 Device;
 double g_StaticFrameTime = 0.0;
+
+//Vertex2d v[] = {
+//	{D3DXVECTOR4(0.0f,   0.0f, 0.0f, 1.0f), D3DCOLOR_RGBA(255, 255, 255, 255), D3DXVECTOR2(0.0f, 0.0f)},
+//	{D3DXVECTOR4(50.0f,   0.0f, 0.0f, 1.0f), D3DCOLOR_RGBA(255, 255, 255, 255), D3DXVECTOR2(1.0f, 0.0f)},
+//	{D3DXVECTOR4(0.0f, 50.0f, 0.0f, 1.0f), D3DCOLOR_RGBA(255, 255, 255, 255), D3DXVECTOR2(0.0f, 1.0f)},
+//	{D3DXVECTOR4(50.0f, 50.0f, 0.0f, 1.0f), D3DCOLOR_RGBA(255, 255, 255, 255), D3DXVECTOR2(1.0f, 1.0f)}
+//};
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -32,7 +40,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	RegisterClass(&wc);			//オリジナルウインドウは自分でクラスをシステムに登録(RegisterClass)する必要がある
 
 	//CreateWindowに指定する幅、高さは、スクリーンサイズに他の部分をたした長さで指定する
-	RECT window_rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };	//左 上 右下
+	RECT window_rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };	//左 上 右 下
 	int window_width = window_rect.right - window_rect.left;
 	int window_height = window_rect.bottom - window_rect.top;
 	int window_style = WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX);
@@ -60,48 +68,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-	
-	//
-	// Create the main application window.
-	//
-
-	//WNDCLASS wc;
-
-	//wc.style = CS_HREDRAW | CS_VREDRAW;
-	//wc.lpfnWndProc = WndProc;
-	//wc.cbClsExtra = 0;
-	//wc.cbWndExtra = 0;
-	//wc.hInstance = hInstance;
-	//wc.hIcon = LoadIcon(0, IDI_APPLICATION);
-	//wc.hCursor = LoadCursor(0, IDC_ARROW);
-	//wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	//wc.lpszMenuName = 0;
-	//wc.lpszClassName = "Direct3D9App";
-
-	//if (!RegisterClass(&wc))
-	//{
-	//	::MessageBox(0, "RegisterClass() - FAILED", 0, 0);
-	//	return false;
-	//}
-
-	//HWND hWnd = 0;
-	//hWnd = CreateWindow("Direct3D9App", "Direct3D9App",
-	//	WS_EX_TOPMOST,
-	//	0, 0, 640, 480,
-	//	0 /*parent hwnd*/, 0 /* menu */, hInstance, 0 /*extra*/);
-
-	//if (!hWnd)
-	//{
-	//	::MessageBox(0, "CreateWindow() - FAILED", 0, 0);
-	//	return false;
-	//}
-
-	//::ShowWindow(hWnd, SW_SHOW);
-	//::UpdateWindow(hWnd);
-
 
 	Init(hWnd);
-	//Keyboard_Initialize(hInstance, hWnd);	//Input Initialize
+	Keyboard_Initialize(hInstance, hWnd);	//Input Initialize
 
 	//メッセージループ-->メッセージを受け取るまで、プログラムをブロックする
 	//如果hWnd为NULL，则GetMessage接收属于调用线程的窗口的消息，线程消息由函数PostThreadMessage寄送给调用线程。
@@ -111,9 +80,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	//wMsgFilterMin：指定被检索的最小消息值的整数。
 	//wMsgFilterMax：指定被检索的最大消息值的整数。
 	MSG msg = {};
-
-	static float lastTime = SystemTimer_GetTime();
-
 	while (WM_QUIT != msg.message) {
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
@@ -121,15 +87,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 		else {
 			//ゲーム処理
-			double currTime = SystemTimer_GetTime();
+			double time = SystemTimer_GetTime();
 
-			if (currTime - g_StaticFrameTime < 1.0 / 60.0) {
+			if (time - g_StaticFrameTime < 1.0 / 60.0) {
 				Sleep(0);
 			}
 			else {
-				float timeDelta = (currTime - lastTime)*0.001f;
-
-				g_StaticFrameTime = currTime;
+				g_StaticFrameTime = time;
 				Update();
 				Draw();
 			}
@@ -191,11 +155,7 @@ void Update() {
 void Draw(void) {
 
 	//画面のクリア,           　　　　 クリアしたいターゲット　　　　　　　　　　色　　　　　　　　　　　　　Z　　ステンシル
-	//Device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(135, 206, 235, 255), 1.0f, 0);
-	Device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0xff000000, 1.0f, 0L);
-
-	//ID3DXMesh *mesh = 0;
-	//D3DXCreateTeapot(myDevice, &mesh, 0);
+	Device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(135, 206, 235, 255), 1.0f, 0);
 
 	//ポリゴン描画 1.頂点構造体を作ります　2.デバイスに頂点の形を伝えるためのFVFを宣言する
 	//3.頂点データを作る　
@@ -203,7 +163,7 @@ void Draw(void) {
 	Device->BeginScene();	//BeginScene後一定要接EndScene
 	Device->SetFVF(FVF_VERTEX2D);
 
-	//gameDraw();
+	gameDraw();
 
 	Device->EndScene();		//在Call下一個BeginScene之前一定要接EndScene
 	Device->Present(NULL, NULL, NULL, NULL);
