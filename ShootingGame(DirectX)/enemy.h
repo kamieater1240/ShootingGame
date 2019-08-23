@@ -45,6 +45,11 @@ typedef struct ENEMY {
 	//ショットパターン
 	int shot_pattern;
 
+	//Health Point
+	int hp;
+	//持っているアイテムタイプ
+	int item;
+
 	//敵が出現してからのカウン
 	int count;
 

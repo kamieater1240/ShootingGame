@@ -34,7 +34,7 @@ void playerInit() {
 
 	Texture_SetLoadFile("Assets/Textures/player.png", 512, 512);
 	Texture_SetLoadFile("Assets/Textures/kShot.png", 512, 512);
-	Texture_SetLoadFile("Assets/Textures/bullet.png", 1024, 1024);
+	//Texture_SetLoadFile("Assets/Textures/bullet.png", 1024, 1024);
 	Texture_Load();
 
 	//g_player_position = D3DXVECTOR2(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT - PLAYER_HEIGHT);
@@ -53,9 +53,10 @@ void playerInit() {
 	//グラフィックハンドルと画像のサイズを代入しとく
 	for (int i = 0; i < PSHOT_NUM; ++i) {
 		shot[i].flag = false;
-		shot[i].gh = Texture_GetID("Assets/Textures/bullet.png");
-		shot[i].width = 34;
-		shot[i].height = 42;
+		//shot[i].gh = Texture_GetID("Assets/Textures/bullet.png");
+		shot[i].gh = Texture_GetID("Assets/Textures/kShot.png");
+		shot[i].width = 17;
+		shot[i].height = 21;
 	}
 	shotCount = 0;
 
@@ -86,7 +87,7 @@ void playerDraw() {
 	//Draw Bullets
 	for (int i = 0; i < PSHOT_NUM; ++i) {
 		if (shot[i].flag) {
-			Sprite_Draw(shot[i].gh, shot[i].x, shot[i].y, 0, 430, shot[i].width, shot[i].height);
+			Sprite_Draw(shot[i].gh, shot[i].x, shot[i].y, 0, 215, shot[i].width, shot[i].height);
 		}
 	}
 

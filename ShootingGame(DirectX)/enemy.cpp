@@ -15,51 +15,19 @@
 static int g_enemy_textureID;
 static int g_enemyShot_textureID;
 
-//ENEMY enemy[ENEMY_NUM];
-ENEMY enemy;
+ENEMY enemy[ENEMY_NUM];
+//ENEMY enemy;
 ENEMYDATA data[ENEMY_NUM];
 
 void enemyInit() {
 	Texture_SetLoadFile("Assets/Textures/enemy.png", 512, 512);
-	Texture_SetLoadFile("Assets/Textures/bullet.png", 512, 512);
+	Texture_SetLoadFile("Assets/Textures/bullet.png", 1024, 1024);
 	Texture_Load();
 	g_enemy_textureID = Texture_GetID("Assets/Textures/enemy.png");
 	g_enemyShot_textureID = Texture_GetID("Assets/Textures/bullet.png");
 
-	//readENEMYDATA();
-	//enemy = new ENEMY();
-
-	enemy.width = 64.f;
-	enemy.height = 64.f;
-	enemy.type = 0;
-	enemy.shotType = 0;
-	enemy.move_pattern = 0;
-	enemy.shot_pattern = 0;
-	enemy.enemy_position.x = 50.f;
-	enemy.enemy_position.y = -50.f;
-
-	enemy.in_time = 120;
-	enemy.stop_time = 180;
-	enemy.shot_time = 181;
-	enemy.out_time = 360;
-
-	//弾の初期化
-	for (int i = 0; i < ENEMY_SNUM; i++) {
-		enemy.shot[i].flag = false;
-		enemy.shot[i].width = 56;
-		enemy.shot[i].height = 56;
-		enemy.shot[i].pattern = 0;
-		enemy.shot[i].speed = 4;
-		enemy.shot[i].x = enemy.enemy_position.x;
-		enemy.shot[i].y = enemy.enemy_position.y;
-	}
-
-	enemy.count = 0;
-	enemy.sCount = 0;
-
-	enemy.deadFlag = false;
-	enemy.endFlag = false;
-	enemy.sFlag = false;
+	//Read enemy data from file
+	readENEMYDATA();
 }
 
 void readENEMYDATA() {
@@ -70,7 +38,7 @@ void readENEMYDATA() {
 	int row = 0;
 
 	memset(buf, 0, sizeof(buf));
-	fp = fopen("ENEMYDATA.csv", "r");
+	fp = fopen("ENEMYDATA1.csv", "r");
 
 	//ヘッダ読み飛ばす
 	while (1) {
@@ -121,91 +89,138 @@ void readENEMYDATA() {
 out:
 	//敵クラス生成
 	for (int i = 0; i < ENEMY_NUM; i++) {
+		enemy[i].width = 64.f;
+		enemy[i].height = 64.f;
 
+		enemy[i].type = data[i].type;
+		enemy[i].shotType = data[i].shotType;
+
+		enemy[i].move_pattern = data[i].move_pattern;
+		enemy[i].shot_pattern = data[i].shot_pattern;
+
+		enemy[i].enemy_position.x = data[i].x;
+		enemy[i].enemy_position.y = data[i].y;
+
+		enemy[i].in_time = data[i].in_time;
+		enemy[i].stop_time = data[i].stop_time;
+		enemy[i].shot_time = data[i].shot_time;
+		enemy[i].out_time = data[i].out_time;
+
+		enemy[i].hp = data[i].hp;
+		enemy[i].item = data[i].item;
+
+		//弾の初期化
+		for (int j = 0; j < ENEMY_SNUM; j++) {
+			enemy[i].shot[j].flag = false;
+			enemy[i].shot[j].width = 56;
+			enemy[i].shot[j].height = 56;
+			enemy[i].shot[j].pattern = data[i].shot_pattern;
+			enemy[i].shot[j].speed = data[i].speed;
+			enemy[i].shot[j].x = enemy[i].enemy_position.x;
+			enemy[i].shot[j].y = enemy[i].enemy_position.y;
+		}
+
+		enemy[i].count = 0;
+		enemy[i].sCount = 0;
+
+		enemy[i].deadFlag = false;
+		enemy[i].endFlag = false;
+		enemy[i].sFlag = false;
 	}
 }
 
 void enemyUpdate() {
 	enemyMove();
 	enemyShot();
-	enemy.count++;
+	//enemy.count++;
+	for (int i = 0; i < ENEMY_NUM; i++) {
+		enemy[i].count++;
+	}
 }
 
 void enemyDraw() {
-	//Draw enemy's bullets
-	for (int i = 0; i < ENEMY_SNUM; i++) {
-		if (enemy.shot[i].flag) {
-			Sprite_Draw(g_enemyShot_textureID, enemy.shot[i].x, enemy.shot[i].y, 0, 262, enemy.shot[i].width, enemy.shot[i].height);
-		}
-	}
+	for (int i = 0; i < ENEMY_NUM; i++) {
+		if (g_FrameCount > enemy[i].in_time) {
+			//Draw enemy's bullets
+			for (int j = 0; j < ENEMY_SNUM; j++) {
+				if (enemy[i].shot[j].flag) {
+					Sprite_Draw(g_enemyShot_textureID, enemy[i].shot[j].x, enemy[i].shot[j].y, 0, 262, enemy[i].shot[j].width, enemy[i].shot[j].height);
+				}
+			}
 
-	//Draw Enemy
-	int patternX = enemy.count / 10 % 3;
-	if (!enemy.deadFlag) {
-		Sprite_Draw(g_enemy_textureID, enemy.enemy_position.x, enemy.enemy_position.y, patternX * enemy.width, 0, enemy.width, enemy.height);
+			//Draw Enemy
+			int patternX = enemy[i].count / 10 % 3;
+			if (!enemy[i].deadFlag) {
+				Sprite_Draw(g_enemy_textureID, enemy[i].enemy_position.x, enemy[i].enemy_position.y, patternX * enemy[i].width, 0, enemy[i].width, enemy[i].height);
+			}
+		}
 	}
 }
 
 void enemyMove() {
-	//出てきてから止まる時間までの間なら下に移動
-	if (enemy.in_time < g_FrameCount && g_FrameCount < enemy.stop_time) {
-		enemy.enemy_position.y += 2.f;
-	}
-	//帰還時間を過ぎたら戻る。
-	else if (g_FrameCount > enemy.out_time) {
-		enemy.enemy_position.y -= 2.f;
-		if (enemy.enemy_position.y < -40) {
-			enemy.endFlag = true;
+	for (int i = 0; i < ENEMY_NUM; i++) {
+		//出てきてから止まる時間までの間なら下に移動
+		if (enemy[i].in_time < g_FrameCount && g_FrameCount < enemy[i].stop_time) {
+			enemy[i].enemy_position.y += 2.f;
+		}
+		//帰還時間を過ぎたら戻る。
+		else if (g_FrameCount > enemy[i].out_time) {
+			enemy[i].enemy_position.y -= 2.f;
+			if (enemy[i].enemy_position.y < -40) {
+				enemy[i].endFlag = true;
+			}
 		}
 	}
 }
 
 void enemyShot() {
-	//発射タイミングになったら、フラグを立てる
-	if (enemy.shot_time == g_FrameCount) {
-		enemy.sFlag = true;
-	}
+	for (int i = 0; i < ENEMY_NUM; i++) {
+		//発射タイミングになったら、フラグを立てる
+		if (enemy[i].shot_time == g_FrameCount) {
+			enemy[i].sFlag = true;
+		}
 
-	if (enemy.sFlag) {
-		switch (enemy.shot_pattern) {
-		case 0:
-			if (enemy.sCount % 20 == 0 && enemy.sCount <= 80) {
-				for (int i = 0; i < ENEMY_SNUM; i++) {
-					if (!enemy.shot[i].flag) {
-						enemy.shot[i].flag = true;
-						enemy.shot[i].x = enemy.enemy_position.x;
-						enemy.shot[i].y = enemy.enemy_position.y;
-						break;
+		if (enemy[i].sFlag) {
+			switch (enemy[i].shot_pattern) {
+			case 0:
+				if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 80) {
+					for (int j = 0; j < ENEMY_SNUM; j++) {
+						if (!enemy[i].shot[j].flag) {
+							enemy[i].shot[j].flag = true;
+							enemy[i].shot[j].x = enemy[i].enemy_position.x;
+							enemy[i].shot[j].y = enemy[i].enemy_position.y;
+							break;
+						}
 					}
 				}
+				break;
+			default: break;
 			}
-			break;
-		default: break;
-		}
 
-		//How many bullets are left on screen
-		int shotLeft = 0;
+			//How many bullets are left on screen
+			int shotLeft = 0;
 
-		//Move the bullets
-		for (int i = 0; i < ENEMY_SNUM; i++) {
-			if (enemy.shot[i].flag) {
-				enemy.shot[i].y += enemy.shot[i].speed;
+			//Move the bullets
+			for (int j = 0; j < ENEMY_SNUM; j++) {
+				if (enemy[i].shot[j].flag) {
+					enemy[i].shot[j].y += enemy[i].shot[j].speed;
 
-				//弾の境界判定
-				if (enemy.shot[i].x < -20 || enemy.shot[i].x > 420 || enemy.shot[i].y < -20 || enemy.shot[i].y > 500) {
-					enemy.shot[i].flag = false;
-					continue;
+					//弾の境界判定
+					if (enemy[i].shot[j].x < -20 || enemy[i].shot[j].x > 420 || enemy[i].shot[j].y < -20 || enemy[i].shot[j].y > 500) {
+						enemy[i].shot[j].flag = false;
+						continue;
+					}
+					shotLeft++;
 				}
-				shotLeft++;
 			}
-		}
 
-		//When shotLeft == 0 means there are no bullets left
-		//And when deadFlag is true at the same time, destroy the enemy
-		if (shotLeft == 0 && enemy.deadFlag) {
-			enemy.endFlag = true;
-		}
+			//When shotLeft == 0 means there are no bullets left
+			//And when deadFlag is true at the same time, destroy the enemy
+			if (shotLeft == 0 && enemy[i].deadFlag) {
+				enemy[i].endFlag = true;
+			}
 
-		enemy.sCount++;
+			enemy[i].sCount++;
+		}
 	}
 }
