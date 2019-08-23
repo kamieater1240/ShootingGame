@@ -8,17 +8,14 @@ int FrameCount = 0;
 
 void SpriteAnim_Init() {
 
-	Texture_SetLoadFile("Asset/Texture/runningman100.png", 700, 400);			//ID 0
-	Texture_SetLoadFile("Asset/Texture/runningman100_flip.png", 700, 400);	  	//ID 1
-	Texture_SetLoadFile("Asset/Texture/runningman101.png", 700, 400);		  	//ID 2
-	Texture_SetLoadFile("Asset/Texture/runningman101_flip.png", 700, 400);	  	//ID 3
-	Texture_SetLoadFile("Asset/Texture/runningman102.png", 700, 400);		  	//ID 4
-	Texture_SetLoadFile("Asset/Texture/runningman102_flip.png", 700, 400);	  	//ID 5
-	Texture_Load();
 }
 
 void SpriteAnim_Update() {
 	FrameCount++;
+}
+
+void SpriteAnim_Draw(int textureID, int playSpeed, float dx, float dy) {
+
 }
 
 void SpriteAnim_Draw(int textureID, int playSpeed, float dx, float dy, float scaleX, float scaleY) {

@@ -26,7 +26,9 @@ bool isMovingRight, isMovingLeft;
 //弾
 SHOT shot[PSHOT_NUM];
 //カウント
-int count;
+int shotCount;
+//Shooting CD
+float shootingCD;
 
 void playerInit() {
 
@@ -40,8 +42,8 @@ void playerInit() {
 	g_player_speed = PLAYER_DEFAULT_SPEED;
 	g_player_textureID = Texture_GetID("Assets/Textures/player.png");
 
-	move = 1.0f;
-	xcount = 0, ycount = 0;
+	move = 1.f;
+	shootingCD = 1.f;
 	life = true;
 	isMovingSlow = false;
 	isMovingRight = false;
@@ -55,7 +57,7 @@ void playerInit() {
 		shot[i].width = 34;
 		shot[i].height = 42;
 	}
-	count = 0;
+	shotCount = 0;
 
 }
 
@@ -70,6 +72,7 @@ void playerUpdate() {
 
 	//発射
 	playerShot();
+	++shotCount;
 
 	//境界判定
 	g_player_position.x = max(g_player_position.x, 30.f + PLAYER_WIDTH / 2.f);
@@ -144,8 +147,8 @@ void playerMove() {
 
 void playerShot() {
 
-	//キーが押されててかつ、10ループに一回発射
-	if (Keyboard_IsPress(DIK_Z) && count % 10 == 0) {
+	//キーが押されててかつ、5ループに一回発射
+	if (Keyboard_IsPress(DIK_Z) && shotCount % 5 == 0) {
 		for (int i = 0; i < PSHOT_NUM; ++i) {
 			if (shot[i].flag == false) {
 				shot[i].flag = true;

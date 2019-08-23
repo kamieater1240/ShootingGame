@@ -9,6 +9,7 @@
 #include "sprite.h"
 #include "texture.h"
 #include "player.h"
+#include "enemy.h"
 #include "debug_font.h"
 
 int g_FrameCount;				//フレームカウンター
@@ -21,6 +22,7 @@ static int g_gameBG_textureID;
 bool inTitlePhrase, inGamePhrase;
 
 void gameInit() {
+	//==============================================System Initialization===============================================//
 	DebugFont_Initialize();
 	SystemTimer_Initialize();
 	SystemTimer_Start();
@@ -31,8 +33,6 @@ void gameInit() {
 
 	inTitlePhrase = true;
 	inGamePhrase = false;
-
-	playerInit();
 
 	Texture_SetLoadFile("Assets/Textures/background.png", SCREEN_WIDTH, SCREEN_HEIGHT);
 	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
@@ -52,7 +52,10 @@ void gameInit() {
 	myDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	myDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	myDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	
+	//==================================================================================================================//
+
+	playerInit();
+	enemyInit();
 }
 
 void gameUninit() {
@@ -63,6 +66,7 @@ void gameUpdate() {
 
 	g_FrameCount++;
 	double time = SystemTimer_GetTime();
+	float timeDelta = time - g_FPSBaseTime;
 
 	if (time - g_FPSBaseTime >= FPS_MEASUREMENT_TIME) {
 		g_FPS = (float)((g_FrameCount - g_FPSBaseFrameCount) / (time - g_FPSBaseTime));
@@ -71,6 +75,7 @@ void gameUpdate() {
 	}
 	
 	playerUpdate();
+	enemyUpdate();
 
 	/*if (inTitlePhrase) {
 
@@ -87,4 +92,5 @@ void gameDraw() {
 	Sprite_Draw(g_gameBG_textureID, 50.f + GAME_WIDTH/2.f, SCREEN_HEIGHT/2.f);
 
 	playerDraw();
+	enemyDraw();
 }
