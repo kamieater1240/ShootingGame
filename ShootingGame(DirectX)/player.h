@@ -11,5 +11,6 @@ void playerUpdate();
 void playerDraw();
 void playerMove();
 void playerShot();
+void getPlayerPosition(float *x, float *y);
 
 #endif // !PLAYER_H_

@@ -138,14 +138,15 @@ void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cu
 	float v1 = (cut_y + cut_h) / (float)height;
 
 	Vertex2d v[] = {
-		{D3DXVECTOR4(dx - width / 2, dy - height / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u0, v0)},
-		{D3DXVECTOR4(dx + width / 2, dy - height / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u1, v0)},
-		{D3DXVECTOR4(dx - width / 2, dy + height / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u0, v1)},
-		{D3DXVECTOR4(dx + width / 2, dy + height / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u1, v1)},
+		{D3DXVECTOR4(dx - cut_w / 2, dy - cut_h / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u0, v0)},
+		{D3DXVECTOR4(dx + cut_w / 2, dy - cut_h / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u1, v0)},
+		{D3DXVECTOR4(dx - cut_w / 2, dy + cut_h / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u0, v1)},
+		{D3DXVECTOR4(dx + cut_w / 2, dy + cut_h / 2, 0.0f, 1.0f), g_Color, D3DXVECTOR2(u1, v1)},
 	};
 
 	LPDIRECT3DDEVICE9 pDevice = MyDirect3D_GetDevice();
 
+	
 	//変数宣言
 	D3DXMATRIX mtxR, mtxT, mtxIT, mtxW;
 	//変数に関数を使用して値を代入する
@@ -164,6 +165,21 @@ void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cu
 	for (int i = 0; i < 4; i++) {
 		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxW);
 	}
+	
+	//for (int i = 0; i < 4; i++) {
+	//	Vertex2d tmp;
+	//	//平移到原點
+	//	tmp.position.x = v[i].position.x - dx;
+	//	tmp.position.y = v[i].position.y - dy;
+
+	//	//計算後的位置
+	//	v[i].position.x = tmp.position.x * cos(angle) - tmp.position.y * sin(angle);
+	//	v[i].position.y = tmp.position.x * sin(angle) + tmp.position.y * cos(angle);
+
+	//	//平移回原本的軸心
+	//	v[i].position.x = v[i].position.x + dx;
+	//	v[i].position.y = v[i].position.y + dy;
+	//}
 
 	pDevice->SetFVF(FVF_VERTEX2D);
 	pDevice->SetTexture(0, Texture_GetTexture(textureID));

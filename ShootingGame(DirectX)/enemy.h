@@ -1,7 +1,7 @@
 #ifndef ENEMY_H_
 #define ENEMY_H_
 
-#define ENEMY_NUM   5
+#define ENEMY_NUM   4
 #define ENEMY_SNUM 50
 
 //class ENEMY {
@@ -20,6 +20,7 @@ struct E_SHOT {
 	bool flag;			//弾が発射中かどうか
 	double x;			//x座標
 	double y;			//y座標
+	double radian;		//進む角度
 	int width, height;	//画像の幅と高さ
 	int pattern;		//ショットパターン
 	int speed;			//弾スピード
@@ -52,6 +53,11 @@ typedef struct ENEMY {
 
 	//敵が出現してからのカウン
 	int count;
+
+	//Control how many bullets an enemy shoots once
+	int bulletNum;
+	//Shooting bullet's radian
+	double shootingRadian;
 
 	//敵消滅フラグ
 	bool deadFlag;
@@ -88,6 +94,8 @@ void enemyDraw();
 void enemyMove();
 void enemyShot();
 void readENEMYDATA();
+bool checkRange(ENEMY enemy);
+void getEnemyPosition(int index, float *x, float *y);
 
 
 #endif // !ENEMY_H_

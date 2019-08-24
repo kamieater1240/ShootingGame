@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "mydirect3d.h"
 #include "input.h"
+#include "enemy.h"
 #include "debug_font.h"
 
 //player parameter
@@ -38,7 +39,7 @@ void playerInit() {
 	Texture_Load();
 
 	//g_player_position = D3DXVECTOR2(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT - PLAYER_HEIGHT);
-	g_player_position = D3DXVECTOR2(100.f, 100.f);
+	g_player_position = D3DXVECTOR2(400.f, 800.f);
 	g_player_speed = PLAYER_DEFAULT_SPEED;
 	g_player_textureID = Texture_GetID("Assets/Textures/player.png");
 
@@ -171,4 +172,9 @@ void playerShot() {
 			}
 		}
 	}
+}
+
+void getPlayerPosition(float *x, float *y) {
+	*x = g_player_position.x;
+	*y = g_player_position.y;
 }

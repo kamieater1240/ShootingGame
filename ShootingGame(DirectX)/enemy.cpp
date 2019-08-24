@@ -10,6 +10,7 @@
 #include "mydirect3d.h"
 #include "input.h"
 #include "game.h"
+#include "player.h"
 #include "debug_font.h"
 
 static int g_enemy_textureID;
@@ -112,8 +113,14 @@ out:
 		//弾の初期化
 		for (int j = 0; j < ENEMY_SNUM; j++) {
 			enemy[i].shot[j].flag = false;
-			enemy[i].shot[j].width = 56;
-			enemy[i].shot[j].height = 56;
+			if (enemy[i].shotType == 0 || enemy[i].shotType == 2) {
+				enemy[i].shot[j].width = 54;
+				enemy[i].shot[j].height = 60;
+			}
+			else {
+				enemy[i].shot[j].width = 32;
+				enemy[i].shot[j].height = 60;
+			}
 			enemy[i].shot[j].pattern = data[i].shot_pattern;
 			enemy[i].shot[j].speed = data[i].speed;
 			enemy[i].shot[j].x = enemy[i].enemy_position.x;
@@ -144,7 +151,10 @@ void enemyDraw() {
 			//Draw enemy's bullets
 			for (int j = 0; j < ENEMY_SNUM; j++) {
 				if (enemy[i].shot[j].flag) {
-					Sprite_Draw(g_enemyShot_textureID, enemy[i].shot[j].x, enemy[i].shot[j].y, 0, 262, enemy[i].shot[j].width, enemy[i].shot[j].height);
+					if (enemy[i].shotType == 0 || enemy[i].shotType == 2)
+						Sprite_Draw(g_enemyShot_textureID, enemy[i].shot[j].x, enemy[i].shot[j].y, 0, 262, enemy[i].shot[j].width, enemy[i].shot[j].height);
+					else
+						Sprite_Draw(g_enemyShot_textureID, enemy[i].shot[j].x, enemy[i].shot[j].y, 0, 366, enemy[i].shot[j].width, enemy[i].shot[j].height, enemy[i].shot[j].x, enemy[i].shot[j].y, enemy[i].shot[j].radian + D3DX_PI / 2.f);
 				}
 			}
 
@@ -159,15 +169,47 @@ void enemyDraw() {
 
 void enemyMove() {
 	for (int i = 0; i < ENEMY_NUM; i++) {
-		//出てきてから止まる時間までの間なら下に移動
-		if (enemy[i].in_time < g_FrameCount && g_FrameCount < enemy[i].stop_time) {
-			enemy[i].enemy_position.y += 2.f;
-		}
-		//帰還時間を過ぎたら戻る。
-		else if (g_FrameCount > enemy[i].out_time) {
-			enemy[i].enemy_position.y -= 2.f;
-			if (enemy[i].enemy_position.y < -40) {
-				enemy[i].endFlag = true;
+		if (!enemy[i].deadFlag) {
+			switch (enemy[i].move_pattern) {
+			case 0:
+				//出てきてから止まる時間までの間なら下に移動
+				if (enemy[i].in_time < g_FrameCount && g_FrameCount < enemy[i].stop_time) {
+					enemy[i].enemy_position.y += 2.f;
+				}
+				//帰還時間を過ぎたら戻る。
+				else if (g_FrameCount > enemy[i].out_time) {
+					enemy[i].enemy_position.y -= 2.f;
+				}
+				break;
+			case 1:	//move straight down
+				if (enemy[i].in_time < g_FrameCount) {
+					enemy[i].enemy_position.y += 2.f;
+				}
+				break;
+			case 2:	//move straight down and right a little
+				if (enemy[i].in_time < g_FrameCount) {
+					enemy[i].enemy_position.y += 2.f;
+					if (g_FrameCount % 5 == 0) {
+						enemy[i].enemy_position.x += 2.f;
+					}
+				}
+				break;
+			case 3: //move straight down and left a little
+				if (enemy[i].in_time < g_FrameCount) {
+					enemy[i].enemy_position.y += 2.f;
+					if (g_FrameCount % 5 == 0) {
+						enemy[i].enemy_position.x -= 2.f;
+					}
+				}
+				break;
+			default: break;
+			}
+
+			//If g_FrameCount is bigger than stop_time or out of the range, kill the enemy
+			if (enemy[i].stop_time < g_FrameCount) {
+				if (checkRange(enemy[i])) {
+					enemy[i].deadFlag = true;
+				}
 			}
 		}
 	}
@@ -175,20 +217,82 @@ void enemyMove() {
 
 void enemyShot() {
 	for (int i = 0; i < ENEMY_NUM; i++) {
+
 		//発射タイミングになったら、フラグを立てる
 		if (enemy[i].shot_time == g_FrameCount) {
 			enemy[i].sFlag = true;
 		}
 
 		if (enemy[i].sFlag) {
+			//Get player's position
+			float playerX, playerY;
+			getPlayerPosition(&playerX, &playerY);
+
+			//Calculate the radian with the player
+			if (enemy[i].sCount == 0)
+				enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
+
 			switch (enemy[i].shot_pattern) {
-			case 0:
+			case 0: //Shoot straight
 				if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 80) {
 					for (int j = 0; j < ENEMY_SNUM; j++) {
 						if (!enemy[i].shot[j].flag) {
 							enemy[i].shot[j].flag = true;
 							enemy[i].shot[j].x = enemy[i].enemy_position.x;
 							enemy[i].shot[j].y = enemy[i].enemy_position.y;
+							enemy[i].shot[j].radian = enemy[i].shootingRadian;
+							break;
+						}
+					}
+				}
+				break;
+			case 1: //Shoot straight at the player
+				if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 180) {
+					for (int j = 0; j < ENEMY_SNUM; j++) {
+						if (!enemy[i].shot[j].flag) {
+							enemy[i].shot[j].flag = true;
+							enemy[i].shot[j].x = enemy[i].enemy_position.x;
+							enemy[i].shot[j].y = enemy[i].enemy_position.y;
+							enemy[i].shot[j].radian = enemy[i].shootingRadian;
+							break;
+						}
+					}
+				}
+				break;
+			case 2: //Shoot 3 straight bullets
+				if (enemy[i].sCount % 30 == 0 && enemy[i].sCount <= 120) {
+					for (int j = 0; j < ENEMY_SNUM; j++) {
+						if (!enemy[i].shot[j].flag) {
+							enemy[i].shot[j].flag = true;
+							enemy[i].shot[j].x = enemy[i].enemy_position.x;
+							enemy[i].shot[j].y = enemy[i].enemy_position.y;
+
+							if (enemy[i].bulletNum == 0)			//Lean a little to right
+								enemy[i].shot[j].radian = enemy[i].shootingRadian - (10 * D3DX_PI / 180.f);
+							else if (enemy[i].bulletNum == 1)		//Straight to the player
+								enemy[i].shot[j].radian = enemy[i].shootingRadian;
+							else if (enemy[i].bulletNum == 2)		//Lean a little to left
+								enemy[i].shot[j].radian = enemy[i].shootingRadian + (10 * D3DX_PI / 180.f);
+
+							enemy[i].bulletNum++;
+
+							if (enemy[i].bulletNum == 3) {
+								enemy[i].bulletNum = 0;
+								break;
+							}
+						}
+					}
+				}
+				break;
+			case 3: //Shoot randomly
+				if (enemy[i].sCount % 10 == 0) {
+					//Shoot 1 bullet each loop
+					for (int j = 0; j < ENEMY_SNUM; j++) {
+						if (!enemy[i].shot[j].flag) {
+							enemy[i].shot[j].flag = true;
+							enemy[i].shot[j].x = enemy[i].enemy_position.x;
+							enemy[i].shot[j].y = enemy[i].enemy_position.y;
+							enemy[i].shot[j].radian = enemy[i].shootingRadian - (60 * D3DX_PI / 180.f) + ((rand() % 120)* D3DX_PI / 180.f);
 							break;
 						}
 					}
@@ -203,10 +307,28 @@ void enemyShot() {
 			//Move the bullets
 			for (int j = 0; j < ENEMY_SNUM; j++) {
 				if (enemy[i].shot[j].flag) {
-					enemy[i].shot[j].y += enemy[i].shot[j].speed;
+					switch (enemy[i].shot_pattern) {
+					case 0:
+						enemy[i].shot[j].y += enemy[i].shot[j].speed;
+						break;
+					case 1:
+						enemy[i].shot[j].x += enemy[i].shot[j].speed * cos(enemy[i].shot[j].radian);
+						enemy[i].shot[j].y += enemy[i].shot[j].speed * sin(enemy[i].shot[j].radian);
+						break;
+					case 2:
+						enemy[i].shot[j].x += enemy[i].shot[j].speed * cos(enemy[i].shot[j].radian);
+						enemy[i].shot[j].y += enemy[i].shot[j].speed * sin(enemy[i].shot[j].radian);
+						break;
+					case 3:
+						enemy[i].shot[j].x += enemy[i].shot[j].speed * cos(enemy[i].shot[j].radian);
+						enemy[i].shot[j].y += enemy[i].shot[j].speed * sin(enemy[i].shot[j].radian);
+						break;
+					default: break;
+					}
+
 
 					//弾の境界判定
-					if (enemy[i].shot[j].x < -20 || enemy[i].shot[j].x > 420 || enemy[i].shot[j].y < -20 || enemy[i].shot[j].y > 500) {
+					if (checkRange(enemy[i])) {
 						enemy[i].shot[j].flag = false;
 						continue;
 					}
@@ -223,4 +345,16 @@ void enemyShot() {
 			enemy[i].sCount++;
 		}
 	}
+}
+
+bool checkRange(ENEMY enemy) {
+	if (enemy.enemy_position.x < -50 || enemy.enemy_position.x > 520 || enemy.enemy_position.y < -50 || enemy.enemy_position.y > 530)
+		return true;
+	else
+		return false;
+}
+
+void getEnemyPosition(int index, float *x, float *y) {
+	*x = enemy[index].enemy_position.x;
+	*y = enemy[index].enemy_position.y;
 }
