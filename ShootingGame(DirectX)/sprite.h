@@ -13,5 +13,6 @@ void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cu
 void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cut_w, int cut_h, float centerX, float centerY, float angle);
 void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cut_w, int cut_h, float scaleX, float scaleY);
 void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cut_w, int cut_h, float centerX, float centerY, float angle, float scaleX, float scaleY);
+void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cut_w, int cut_h, int alpha);
 
 #endif // !SPRITE_H

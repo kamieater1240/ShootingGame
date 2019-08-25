@@ -10,6 +10,7 @@
 #include "texture.h"
 #include "player.h"
 #include "enemy.h"
+#include "collision.h"
 #include "debug_font.h"
 
 int g_FrameCount;				//フレームカウンター
@@ -76,7 +77,7 @@ void gameUpdate() {
 	
 	playerUpdate();
 	enemyUpdate();
-
+	checkCollisionAll();
 	/*if (inTitlePhrase) {
 
 	}

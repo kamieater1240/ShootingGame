@@ -165,21 +165,6 @@ void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cu
 	for (int i = 0; i < 4; i++) {
 		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxW);
 	}
-	
-	//for (int i = 0; i < 4; i++) {
-	//	Vertex2d tmp;
-	//	//平移到原點
-	//	tmp.position.x = v[i].position.x - dx;
-	//	tmp.position.y = v[i].position.y - dy;
-
-	//	//計算後的位置
-	//	v[i].position.x = tmp.position.x * cos(angle) - tmp.position.y * sin(angle);
-	//	v[i].position.y = tmp.position.x * sin(angle) + tmp.position.y * cos(angle);
-
-	//	//平移回原本的軸心
-	//	v[i].position.x = v[i].position.x + dx;
-	//	v[i].position.y = v[i].position.y + dy;
-	//}
 
 	pDevice->SetFVF(FVF_VERTEX2D);
 	pDevice->SetTexture(0, Texture_GetTexture(textureID));
@@ -263,6 +248,31 @@ void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cu
 	for (int i = 0; i < 4; i++) {
 		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxW);
 	}
+
+	pDevice->SetFVF(FVF_VERTEX2D);
+	pDevice->SetTexture(0, Texture_GetTexture(textureID));
+	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, v, sizeof(Vertex2d));
+	pDevice->SetTexture(0, NULL);
+}
+
+void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cut_w, int cut_h, int alpha) {
+	int width = Texture_GetWidth(textureID);
+	int height = Texture_GetHeight(textureID);
+	float u0 = cut_x / (float)width;
+	float v0 = cut_y / (float)height;
+	float u1 = (cut_x + cut_w) / (float)width;
+	float v1 = (cut_y + cut_h) / (float)height;
+
+	D3DCOLOR tmp_Color = D3DCOLOR_RGBA(255, 255, 255, alpha);
+
+	Vertex2d v[] = {
+		{D3DXVECTOR4(dx - cut_w / 2, dy - cut_h / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(u0, v0)},
+		{D3DXVECTOR4(dx + cut_w / 2, dy - cut_h / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(u1, v0)},
+		{D3DXVECTOR4(dx - cut_w / 2, dy + cut_h / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(u0, v1)},
+		{D3DXVECTOR4(dx + cut_w / 2, dy + cut_h / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(u1, v1)},
+	};
+
+	LPDIRECT3DDEVICE9 pDevice = MyDirect3D_GetDevice();
 
 	pDevice->SetFVF(FVF_VERTEX2D);
 	pDevice->SetTexture(0, Texture_GetTexture(textureID));

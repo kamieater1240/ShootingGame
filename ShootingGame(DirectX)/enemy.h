@@ -96,6 +96,11 @@ void enemyShot();
 void readENEMYDATA();
 bool checkRange(ENEMY enemy);
 void getEnemyPosition(int index, float *x, float *y);
+bool getEnemyShotPosition(int enemyIndex, int shotIndex, float *x, float *y);
+void setEnemyShotFlag(int enemyIndex, int shotIndex, bool flag);
+int  getEnemyShotType(int enemyIndex);
+void setEnemyDeadFlag(int index);
+bool getEnemyDeadFlag(int index);
 
 
 #endif // !ENEMY_H_

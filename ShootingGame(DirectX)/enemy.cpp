@@ -224,81 +224,84 @@ void enemyShot() {
 		}
 
 		if (enemy[i].sFlag) {
-			//Get player's position
-			float playerX, playerY;
-			getPlayerPosition(&playerX, &playerY);
 
-			//Calculate the radian with the player
-			if (enemy[i].sCount == 0)
-				enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
+			if (!enemy[i].deadFlag) {
+				//Get player's position
+				float playerX, playerY;
+				getPlayerPosition(&playerX, &playerY);
 
-			switch (enemy[i].shot_pattern) {
-			case 0: //Shoot straight
-				if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 80) {
-					for (int j = 0; j < ENEMY_SNUM; j++) {
-						if (!enemy[i].shot[j].flag) {
-							enemy[i].shot[j].flag = true;
-							enemy[i].shot[j].x = enemy[i].enemy_position.x;
-							enemy[i].shot[j].y = enemy[i].enemy_position.y;
-							enemy[i].shot[j].radian = enemy[i].shootingRadian;
-							break;
-						}
-					}
-				}
-				break;
-			case 1: //Shoot straight at the player
-				if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 180) {
-					for (int j = 0; j < ENEMY_SNUM; j++) {
-						if (!enemy[i].shot[j].flag) {
-							enemy[i].shot[j].flag = true;
-							enemy[i].shot[j].x = enemy[i].enemy_position.x;
-							enemy[i].shot[j].y = enemy[i].enemy_position.y;
-							enemy[i].shot[j].radian = enemy[i].shootingRadian;
-							break;
-						}
-					}
-				}
-				break;
-			case 2: //Shoot 3 straight bullets
-				if (enemy[i].sCount % 30 == 0 && enemy[i].sCount <= 120) {
-					for (int j = 0; j < ENEMY_SNUM; j++) {
-						if (!enemy[i].shot[j].flag) {
-							enemy[i].shot[j].flag = true;
-							enemy[i].shot[j].x = enemy[i].enemy_position.x;
-							enemy[i].shot[j].y = enemy[i].enemy_position.y;
+				//Calculate the radian with the player
+				if (enemy[i].sCount == 0)
+					enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
 
-							if (enemy[i].bulletNum == 0)			//Lean a little to right
-								enemy[i].shot[j].radian = enemy[i].shootingRadian - (10 * D3DX_PI / 180.f);
-							else if (enemy[i].bulletNum == 1)		//Straight to the player
+				switch (enemy[i].shot_pattern) {
+				case 0: //Shoot straight
+					if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 80) {
+						for (int j = 0; j < ENEMY_SNUM; j++) {
+							if (!enemy[i].shot[j].flag) {
+								enemy[i].shot[j].flag = true;
+								enemy[i].shot[j].x = enemy[i].enemy_position.x;
+								enemy[i].shot[j].y = enemy[i].enemy_position.y;
 								enemy[i].shot[j].radian = enemy[i].shootingRadian;
-							else if (enemy[i].bulletNum == 2)		//Lean a little to left
-								enemy[i].shot[j].radian = enemy[i].shootingRadian + (10 * D3DX_PI / 180.f);
-
-							enemy[i].bulletNum++;
-
-							if (enemy[i].bulletNum == 3) {
-								enemy[i].bulletNum = 0;
 								break;
 							}
 						}
 					}
-				}
-				break;
-			case 3: //Shoot randomly
-				if (enemy[i].sCount % 10 == 0) {
-					//Shoot 1 bullet each loop
-					for (int j = 0; j < ENEMY_SNUM; j++) {
-						if (!enemy[i].shot[j].flag) {
-							enemy[i].shot[j].flag = true;
-							enemy[i].shot[j].x = enemy[i].enemy_position.x;
-							enemy[i].shot[j].y = enemy[i].enemy_position.y;
-							enemy[i].shot[j].radian = enemy[i].shootingRadian - (60 * D3DX_PI / 180.f) + ((rand() % 120)* D3DX_PI / 180.f);
-							break;
+					break;
+				case 1: //Shoot straight at the player
+					if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 180) {
+						for (int j = 0; j < ENEMY_SNUM; j++) {
+							if (!enemy[i].shot[j].flag) {
+								enemy[i].shot[j].flag = true;
+								enemy[i].shot[j].x = enemy[i].enemy_position.x;
+								enemy[i].shot[j].y = enemy[i].enemy_position.y;
+								enemy[i].shot[j].radian = enemy[i].shootingRadian;
+								break;
+							}
 						}
 					}
+					break;
+				case 2: //Shoot 3 straight bullets
+					if (enemy[i].sCount % 30 == 0 && enemy[i].sCount <= 120) {
+						for (int j = 0; j < ENEMY_SNUM; j++) {
+							if (!enemy[i].shot[j].flag) {
+								enemy[i].shot[j].flag = true;
+								enemy[i].shot[j].x = enemy[i].enemy_position.x;
+								enemy[i].shot[j].y = enemy[i].enemy_position.y;
+
+								if (enemy[i].bulletNum == 0)			//Lean a little to right
+									enemy[i].shot[j].radian = enemy[i].shootingRadian - (10 * D3DX_PI / 180.f);
+								else if (enemy[i].bulletNum == 1)		//Straight to the player
+									enemy[i].shot[j].radian = enemy[i].shootingRadian;
+								else if (enemy[i].bulletNum == 2)		//Lean a little to left
+									enemy[i].shot[j].radian = enemy[i].shootingRadian + (10 * D3DX_PI / 180.f);
+
+								enemy[i].bulletNum++;
+
+								if (enemy[i].bulletNum == 3) {
+									enemy[i].bulletNum = 0;
+									break;
+								}
+							}
+						}
+					}
+					break;
+				case 3: //Shoot randomly
+					if (enemy[i].sCount % 10 == 0) {
+						//Shoot 1 bullet each loop
+						for (int j = 0; j < ENEMY_SNUM; j++) {
+							if (!enemy[i].shot[j].flag) {
+								enemy[i].shot[j].flag = true;
+								enemy[i].shot[j].x = enemy[i].enemy_position.x;
+								enemy[i].shot[j].y = enemy[i].enemy_position.y;
+								enemy[i].shot[j].radian = enemy[i].shootingRadian - (60 * D3DX_PI / 180.f) + ((rand() % 120)* D3DX_PI / 180.f);
+								break;
+							}
+						}
+					}
+					break;
+				default: break;
 				}
-				break;
-			default: break;
 			}
 
 			//How many bullets are left on screen
@@ -357,4 +360,30 @@ bool checkRange(ENEMY enemy) {
 void getEnemyPosition(int index, float *x, float *y) {
 	*x = enemy[index].enemy_position.x;
 	*y = enemy[index].enemy_position.y;
+}
+
+bool getEnemyShotPosition(int enemyIndex, int shotIndex, float *x, float *y) {
+	if (enemy[enemyIndex].shot[shotIndex].flag) {
+		*x = enemy[enemyIndex].shot[shotIndex].x;
+		*y = enemy[enemyIndex].shot[shotIndex].y;
+		return true;
+	}
+	else
+		return false;
+}
+
+void setEnemyShotFlag(int enemyIndex, int shotIndex, bool flag) {
+	enemy[enemyIndex].shot[shotIndex].flag = flag;
+}
+
+int getEnemyShotType(int enemyIndex) {
+	return enemy[enemyIndex].shotType;
+}
+
+void setEnemyDeadFlag(int index) {
+	enemy[index].deadFlag = true;
+}
+
+bool getEnemyDeadFlag(int index) {
+	return enemy[index].deadFlag;
 }
