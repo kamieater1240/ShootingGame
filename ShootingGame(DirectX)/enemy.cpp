@@ -207,7 +207,7 @@ void enemyMove() {
 
 			//If g_FrameCount is bigger than stop_time or out of the range, kill the enemy
 			if (enemy[i].stop_time < g_FrameCount) {
-				if (checkRange(enemy[i])) {
+				if (checkOutOfRange(enemy[i])) {
 					enemy[i].deadFlag = true;
 				}
 			}
@@ -331,7 +331,7 @@ void enemyShot() {
 
 
 					//’e‚Ì‹«ŠE”»’è
-					if (checkRange(enemy[i])) {
+					if (checkOutOfRange(enemy[i])) {
 						enemy[i].shot[j].flag = false;
 						continue;
 					}
@@ -350,8 +350,8 @@ void enemyShot() {
 	}
 }
 
-bool checkRange(ENEMY enemy) {
-	if (enemy.enemy_position.x < -50 || enemy.enemy_position.x > 520 || enemy.enemy_position.y < -50 || enemy.enemy_position.y > 530)
+bool checkOutOfRange(ENEMY enemy) {
+	if (enemy.enemy_position.x < 50 || enemy.enemy_position.x > 750 || enemy.enemy_position.y < -10 || enemy.enemy_position.y > 850)
 		return true;
 	else
 		return false;
@@ -360,6 +360,20 @@ bool checkRange(ENEMY enemy) {
 void getEnemyPosition(int index, float *x, float *y) {
 	*x = enemy[index].enemy_position.x;
 	*y = enemy[index].enemy_position.y;
+}
+
+bool getEnemyPositions(int index, float *x, float *y) {
+	float tempX, tempY;
+
+	if (getEnemyDeadFlag(index))
+		return false;
+
+	getEnemyPosition(index, &tempX, &tempY);
+
+	*x = tempX;
+	*y = tempY;
+
+	return true;
 }
 
 bool getEnemyShotPosition(int enemyIndex, int shotIndex, float *x, float *y) {
@@ -386,4 +400,8 @@ void setEnemyDeadFlag(int index) {
 
 bool getEnemyDeadFlag(int index) {
 	return enemy[index].deadFlag;
+}
+
+int  getEnemyInTime(int index) {
+	return enemy[index].in_time;
 }

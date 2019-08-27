@@ -11,6 +11,8 @@ struct SHOT {
 	double y;				//y座標
 	int gh;					//グラフィックハンドル
 	int width, height;		//画像の幅と高さ
+	double radian;			//進む角度
+	int type;				//弾の種類
 };
 
 void playerInit();
@@ -24,5 +26,11 @@ bool getPlayerShotPosition(int index, float *x, float *y);
 void setPlayerShotFlag(int index, bool flag);
 void setPlayerDamageFlag();
 bool getPlayerDamageFlag();
+bool checkShotOutOfRange(int index);
+void upgradePlayerPower(int p);
+int  getPlayerPower();
+void showTama();
+int  searchNearbyEnemy();
+void tamaShotSet(int index);
 
 #endif // !PLAYER_H_

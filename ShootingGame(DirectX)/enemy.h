@@ -4,18 +4,6 @@
 #define ENEMY_NUM   4
 #define ENEMY_SNUM 50
 
-//class ENEMY {
-//public:
-//	ENEMY();
-//	bool All();
-//	void Move();
-//	void Draw();
-//
-//private:
-//
-//
-//};
-
 struct E_SHOT {
 	bool flag;			//íeÇ™î≠éÀíÜÇ©Ç«Ç§Ç©
 	double x;			//xç¿ïW
@@ -27,7 +15,7 @@ struct E_SHOT {
 };
 
 
-typedef struct ENEMY {
+struct ENEMY {
 	//ç¿ïW
 	D3DXVECTOR2 enemy_position;
 
@@ -94,14 +82,15 @@ void enemyDraw();
 void enemyMove();
 void enemyShot();
 void readENEMYDATA();
-bool checkRange(ENEMY enemy);
+bool checkOutOfRange(ENEMY enemy);
 void getEnemyPosition(int index, float *x, float *y);
+bool getEnemyPositions(int index, float *x, float *y);
 bool getEnemyShotPosition(int enemyIndex, int shotIndex, float *x, float *y);
 void setEnemyShotFlag(int enemyIndex, int shotIndex, bool flag);
 int  getEnemyShotType(int enemyIndex);
 void setEnemyDeadFlag(int index);
 bool getEnemyDeadFlag(int index);
-
+int  getEnemyInTime(int index);
 
 #endif // !ENEMY_H_
 

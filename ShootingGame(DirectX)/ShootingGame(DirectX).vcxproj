@@ -137,6 +137,7 @@
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="SpriteAnim.cpp" />
     <ClCompile Include="system_timer.cpp" />
+    <ClCompile Include="tama.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,7 @@
     <ClInclude Include="sprite.h" />
     <ClInclude Include="SpriteAnim.h" />
     <ClInclude Include="system_timer.h" />
+    <ClInclude Include="tama.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

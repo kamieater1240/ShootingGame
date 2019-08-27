@@ -12,6 +12,11 @@
 #define PSHOT_NUM				100
 #define PSHOT_SPEED				14
 
+#define TAMA_MAXNUM				4
+#define TAMA_INITX				50
+#define TAMA_INITY				30
+#define TAMA_SHAKE				15
+
 #define PLAYER_COLLISIONRAD		10
 #define ENEMY_COLLISIONRAD		32
 

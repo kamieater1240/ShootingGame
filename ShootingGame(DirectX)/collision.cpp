@@ -4,6 +4,7 @@
 #include "collision.h"
 #include "enemy.h"
 #include "player.h"
+#include "game.h"
 #include "main.h"
 #include "mydirect3d.h"
 
@@ -21,7 +22,7 @@ void checkCollisionAll() {
 	for (int i = 0; i < PSHOT_NUM; i++) {
 		if (getPlayerShotPosition(i, &pBulletPositionX, &pBulletPositionY)) {
 			for (int j = 0; j < ENEMY_NUM; j++) {
-				if (!getEnemyDeadFlag(j)) {
+				if (g_FrameCount > getEnemyInTime(j) && !getEnemyDeadFlag(j)) {
 					getEnemyPosition(j, &ePositionX, &ePositionY);
 					Circle pBullet, enemyObj;
 					pBullet.position.x = pBulletPositionX;

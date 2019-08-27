@@ -8,6 +8,7 @@
 #include "mydirect3d.h"
 #include "input.h"
 #include "enemy.h"
+#include "tama.h"
 #include "debug_font.h"
 
 //player parameter
@@ -36,6 +37,8 @@ SHOT shot[PSHOT_NUM];
 int shotCount;
 //Shooting CD
 float shootingCD;
+//Power
+int power;
 
 void playerInit() {
 
@@ -50,6 +53,8 @@ void playerInit() {
 
 	move = 1.f;
 	shootingCD = 1.f;
+	power = 1;
+	tamaInit();
 
 	life = 1;
 	damageFlag = false;
@@ -67,6 +72,7 @@ void playerInit() {
 		shot[i].gh = Texture_GetID("Assets/Textures/kShot.png");
 		shot[i].width = 17;
 		shot[i].height = 21;
+		shot[i].type = 0;
 	}
 	shotCount = 0;
 
@@ -99,13 +105,13 @@ void playerDraw() {
 	//Draw Bullets
 	for (int i = 0; i < PSHOT_NUM; ++i) {
 		if (shot[i].flag) {
-			Sprite_Draw(shot[i].gh, shot[i].x, shot[i].y, 0, 215, shot[i].width, shot[i].height);
+			Sprite_Draw(shot[i].gh, shot[i].x, shot[i].y, 0, 215, shot[i].width, shot[i].height, shot[i].x, shot[i].y, shot[i].radian + D3DX_PI / 2.f);
 		}
 	}
 
 	//Draw Player
 	if (damageFlag) {	//Get Damage Phase
-		if(damageCounter == 0) //Set the player a little below the initial position
+		if (damageCounter == 0) //Set the player a little below the initial position
 			g_player_position = D3DXVECTOR2(PLAYER_INITX, PLAYER_INITY + 158);
 		if (damageCounter > 20) {
 			if (damageCounter % 2 == 0)
@@ -127,6 +133,9 @@ void playerDraw() {
 		if (isMovingSlow)
 			Sprite_Draw(g_player_centerTexID, g_player_position.x, g_player_position.y, 0, 0, 20, 20);
 	}
+
+	//陰陽玉
+	showTama();
 
 	DebugFont_Draw(32, 32, "x = %.2f, y = %.2f", g_player_position.x, g_player_position.y);
 }
@@ -179,27 +188,115 @@ void playerMove() {
 
 void playerShot() {
 
+	//Control the how many lines of bullets being shot
+	int num = 0;
+
 	if (!damageFlag) {
 		//キーが押されててかつ、5ループに一回発射
 		if (Keyboard_IsPress(DIK_Z) && shotCount % 5 == 0) {
 			for (int i = 0; i < PSHOT_NUM; ++i) {
 				if (shot[i].flag == false) {
-					shot[i].flag = true;
-					shot[i].x = g_player_position.x;
-					shot[i].y = g_player_position.y;
-					break;
+					if (power < 5) {
+						shot[i].flag = true;
+						shot[i].x = g_player_position.x;
+						shot[i].y = g_player_position.y;
+						shot[i].radian = -D3DX_PI / 2.f;
+						shot[i].type = 0;
+						break;
+					}
+					else if (power >= 5 && power < 10) {
+						if (num == 0) {
+							shot[i].flag = true;
+							shot[i].x = g_player_position.x;
+							shot[i].y = g_player_position.y;
+							shot[i].radian = -D3DX_PI / 2.f;
+							shot[i].type = 0;
+						}
+						else if (num == 1) {
+							shot[i].flag = true;
+							shot[i].x = g_player_position.x;
+							shot[i].y = g_player_position.y;
+							shot[i].radian = -D3DX_PI / 2.f - 0.12f;
+							shot[i].type = 0;
+						}
+						else if (num == 2) {
+							shot[i].flag = true;
+							shot[i].x = g_player_position.x;
+							shot[i].y = g_player_position.y;
+							shot[i].radian = -D3DX_PI / 2.f + 0.12;
+							shot[i].type = 0;
+						}
+
+						num++;
+						if (num == 3)
+							break;
+					}
+					else if (power == 10) {
+						if (num == 0) {
+							shot[i].flag = true;
+							shot[i].x = g_player_position.x;
+							shot[i].y = g_player_position.y;
+							shot[i].radian = -D3DX_PI / 2.f;
+							shot[i].type = 0;
+						}
+						else if (num == 1) {
+							shot[i].flag = true;
+							shot[i].x = g_player_position.x;
+							shot[i].y = g_player_position.y;
+							shot[i].radian = -D3DX_PI / 2.f - 0.12f;
+							shot[i].type = 0;
+						}
+						else if (num == 2) {
+							shot[i].flag = true;
+							shot[i].x = g_player_position.x;
+							shot[i].y = g_player_position.y;
+							shot[i].radian = -D3DX_PI / 2.f + 0.12;
+							shot[i].type = 0;
+						}
+						else if (num > 2) {
+							tamaShotSet(i);
+						}
+
+						num++;
+						if (num == 5)
+							break;
+					}
 				}
 			}
 		}
 	}
 
+	//nearest enemy's radian
+	float tRadian;
+	//nearest enemy's index and position
+	int eIndex;
+	float eX, eY;
+	eIndex = searchNearbyEnemy();
+
 	//弾を移動させる処理
 	for (int i = 0; i < PSHOT_NUM; ++i) {
 		//発射してる弾だけ
 		if (shot[i].flag) {
-			shot[i].y -= PSHOT_SPEED;
+			if (shot[i].type == 0) {
+				shot[i].x += cos(shot[i].radian) * PSHOT_SPEED;
+				shot[i].y += sin(shot[i].radian) * PSHOT_SPEED;
+			}
+			else if (shot[i].type == 1) {
+				//There are no enemies
+				if (eIndex == -1)
+					tRadian = -D3DX_PI / 2.f;
+				else {
+					getEnemyPositions(eIndex, &eX, &eY);
+					tRadian = atan2(eY - shot[i].y, eX - shot[i].x);
+				}
+
+				shot[i].radian = tRadian;
+				shot[i].x += cos(shot[i].radian) * PSHOT_SPEED;
+				shot[i].y += sin(shot[i].radian) * PSHOT_SPEED;
+			}
+
 			//画面の外にはみ出したらフラグを戻す
-			if (shot[i].y < -10) {
+			if (checkShotOutOfRange(i)) {
 				shot[i].flag = false;
 			}
 		}
@@ -231,4 +328,81 @@ void setPlayerDamageFlag() {
 
 bool getPlayerDamageFlag() {
 	return damageFlag;
+}
+
+bool checkShotOutOfRange(int index) {
+	if (shot[index].y < -10 || shot[index].x < 50 || shot[index].x > 750)
+		return true;
+	else
+		return false;
+}
+
+void upgradePlayerPower(int p) {
+	power += p;
+	if (power > 10)
+		power = 10;
+}
+
+int  getPlayerPower() {
+	return power;
+}
+
+void showTama() {
+	if (power == 10)
+		tamaAll(g_player_position.x, g_player_position.y);
+}
+
+int searchNearbyEnemy() {
+	int nearEnemyIndex = -1;
+	float nearResult;
+	float eX, eY, tX, tY;
+
+	for (int i = 0; i < ENEMY_NUM; i++) {
+		if (!getEnemyPositions(i, &eX, &eY))
+			continue;
+
+		tX = eX - g_player_position.x;
+		tY = eY - g_player_position.y;
+
+		if (nearEnemyIndex == -1) {
+			nearEnemyIndex = i;
+			nearResult = tX * tX + tY * tY;
+			continue;
+		}
+
+		if (nearResult > tX * tX + tY * tY) {
+			nearEnemyIndex = i;
+			nearResult = tX * tX + tY * tY;
+		}
+	}
+	return nearEnemyIndex;
+}
+
+void tamaShotSet(int index) {
+	float tY;
+	float tRadian, eX, eY;
+	static int toggle = 1;
+	int tIndex;
+
+	tY = tamaGetPosition();
+
+	tIndex = searchNearbyEnemy();
+	if (tIndex == -1) {
+		tRadian = -D3DX_PI / 2.f;
+	}
+	else {
+		getEnemyPositions(tIndex, &eX, &eY);
+		tRadian = atan2(eY - tY + TAMA_INITY, eX - g_player_position.x + (toggle*TAMA_INITX));
+	}
+
+	shot[index].flag = true;
+	shot[index].x = g_player_position.x + TAMA_INITX * toggle;
+	shot[index].y = tY + TAMA_INITY;
+	shot[index].radian = tRadian;
+	shot[index].type = 1;
+
+	if (toggle == 1)
+		toggle = -1;
+	else
+		toggle = 1;
 }
