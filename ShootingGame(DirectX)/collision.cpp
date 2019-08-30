@@ -4,6 +4,8 @@
 #include "collision.h"
 #include "enemy.h"
 #include "player.h"
+#include "item.h"
+#include "scoreboard.h"
 #include "game.h"
 #include "main.h"
 #include "mydirect3d.h"
@@ -38,15 +40,27 @@ void checkCollisionAll() {
 						//set the bullet that hit the enemy to false
 						setPlayerShotFlag(i, false);
 						//play enemy destroy sound effect
+
+						//get points
+						setScoreData(CURRENT_SCORE, 100);
+						//item appears
+						for (int k = 0; k < ITEM_NUM; k++) {
+							if (!getItemFlag(k)) {
+								setItemFlag(k, ePositionX, ePositionY, getEnemyItemType(j));
+								break;
+							}
+						}
 					}
 				}
 			}
 		}
 	}
 
-	//Check the collision between enemies' bullets and the player
+	//player's collision between enemy's bulltes or the items
 	if (!getPlayerDamageFlag()) {
 		getPlayerPosition(&pPositionX, &pPositionY);
+
+		//Check the collision between enemies' bullets and the player
 		for (int i = 0; i < ENEMY_NUM; i++) {
 			for (int j = 0; j < ENEMY_SNUM; j++) {
 				//Check if the bullet is used, if it is used then get its position
@@ -80,5 +94,41 @@ void checkCollisionAll() {
 				}
 			}
 		}
+
+		//Check the collision between player and the items
+		float itemX, itemY;
+		for (int i = 0; i < ITEM_NUM; i++) {
+			if (getItemFlag(i)) {
+				getItemPosition(i, &itemX, &itemY);
+				Circle playerObj, itemObj;
+				playerObj.position.x = pPositionX;
+				playerObj.position.y = pPositionY;
+				playerObj.radius = PLAYER_COLLISIONRAD + 10;
+				itemObj.position.x = itemX;
+				itemObj.position.y = itemY;
+				itemObj.radius = ITEM_COLLISIONRAD;
+
+				if (circleCollsion(&playerObj, &itemObj)) {
+					switch (getItemType(i)) {
+					case 0:			//Get power
+						upgradePlayerPower(1);
+						break;
+					case 1:			//Get point
+						setScoreData(CURRENT_SCORE, 256);
+						break;
+					case 2:			//Get 1up
+						setPlayerLife();
+						break;
+					default: break;
+					}
+
+					DestroyItem(i);
+				}
+			}
+		}
 	}
+
+	//get and set player's life and power
+	setScoreData(LIFE_SCORE, getPlayerLife());
+	setScoreData(POWER_SCORE, getPlayerPower());
 }

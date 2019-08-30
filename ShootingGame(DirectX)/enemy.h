@@ -83,6 +83,7 @@ void enemyMove();
 void enemyShot();
 void readENEMYDATA();
 bool checkOutOfRange(ENEMY enemy);
+bool checkEnemyShotOutOfRange(ENEMY enemy, int index);
 void getEnemyPosition(int index, float *x, float *y);
 bool getEnemyPositions(int index, float *x, float *y);
 bool getEnemyShotPosition(int enemyIndex, int shotIndex, float *x, float *y);
@@ -91,6 +92,7 @@ int  getEnemyShotType(int enemyIndex);
 void setEnemyDeadFlag(int index);
 bool getEnemyDeadFlag(int index);
 int  getEnemyInTime(int index);
+int  getEnemyItemType(int index);
 
 #endif // !ENEMY_H_
 

@@ -66,6 +66,83 @@ void Sprite_Draw(int textureID, float dx, float dy) {
 	pDevice->SetTexture(0, NULL);
 }
 
+//No Cut, Rotating and Alpha Method
+void Sprite_Draw(int textureID, float dx, float dy, float centerX, float centerY, float angle, int alpha, bool dummyFlag) {
+	int width = Texture_GetWidth(textureID);
+	int height = Texture_GetHeight(textureID);
+
+	D3DCOLOR tmp_Color = D3DCOLOR_RGBA(255, 255, 255, alpha);
+
+	Vertex2d v[] = {
+		{D3DXVECTOR4(dx - width / 2, dy - height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(0.0f, 0.0f)},
+		{D3DXVECTOR4(dx + width / 2, dy - height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(1.0f, 0.0f)},
+		{D3DXVECTOR4(dx - width / 2, dy + height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(0.0f, 1.0f)},
+		{D3DXVECTOR4(dx + width / 2, dy + height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(1.0f, 1.0f)},
+	};
+
+	LPDIRECT3DDEVICE9 pDevice = MyDirect3D_GetDevice();
+
+	//変数宣言
+	D3DXMATRIX mtxR, mtxT, mtxIT, mtxW;
+	//変数に関数を使用して値を代入する
+	D3DXMatrixRotationZ(&mtxR, angle);
+
+	//平移矩陣
+	D3DXMatrixTranslation(&mtxT, -centerX, -centerY, 0.0f);
+	D3DXMatrixTranslation(&mtxIT, centerX, centerY, 0.0f);
+
+	mtxW = mtxT * mtxR * mtxIT;
+	//座標変換する
+	//D3DXVec4Transform(&v[0].position, &v[0].position, &mtrxR);
+	//					出力				入力
+	for (int i = 0; i < 4; i++) {
+		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxW);
+	}
+
+	pDevice->SetFVF(FVF_VERTEX2D);
+	pDevice->SetTexture(0, Texture_GetTexture(textureID));
+	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, v, sizeof(Vertex2d));
+	pDevice->SetTexture(0, NULL);
+}
+
+//No Cut, Scaling and Alpha Method
+void Sprite_Draw(int textureID, float dx, float dy, float scaleX, float scaleY, int alpha) {
+	int width = Texture_GetWidth(textureID);
+	int height = Texture_GetHeight(textureID);
+
+	D3DCOLOR tmp_Color = D3DCOLOR_RGBA(255, 255, 255, alpha);
+
+	Vertex2d v[] = {
+		{D3DXVECTOR4(dx - width / 2, dy - height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(0.0f, 0.0f)},
+		{D3DXVECTOR4(dx + width / 2, dy - height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(1.0f, 0.0f)},
+		{D3DXVECTOR4(dx - width / 2, dy + height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(0.0f, 1.0f)},
+		{D3DXVECTOR4(dx + width / 2, dy + height / 2, 0.0f, 1.0f), tmp_Color, D3DXVECTOR2(1.0f, 1.0f)},
+	};
+
+	LPDIRECT3DDEVICE9 pDevice = MyDirect3D_GetDevice();
+
+	//変数宣言
+	D3DXMATRIX mtxS, mtxT, mtxIT, mtxW;
+	//変数に関数を使用して値を代入する
+	D3DXMatrixScaling(&mtxS, scaleX, scaleY, 1.0f);
+	//平移矩陣
+	D3DXMatrixTranslation(&mtxT, -dx, -dy, 0.0f);
+	D3DXMatrixTranslation(&mtxIT, dx, dy, 0.0f);
+
+	mtxW = mtxT * mtxS * mtxIT;
+
+	//座標変換する
+	//					出力				入力
+	for (int i = 0; i < 4; i++) {
+		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxW);
+	}
+
+	pDevice->SetFVF(FVF_VERTEX2D);
+	pDevice->SetTexture(0, Texture_GetTexture(textureID));
+	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, v, sizeof(Vertex2d));
+	pDevice->SetTexture(0, NULL);
+}
+
 //No Cut, Rotating + Scaling Method
 void Sprite_Draw(int textureID, float dx, float dy, float centerX, float centerY, float angle, float scaleX, float scaleY, float scaleZ) {
 	int width = Texture_GetWidth(textureID);
@@ -191,20 +268,20 @@ void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cu
 	LPDIRECT3DDEVICE9 pDevice = MyDirect3D_GetDevice();
 
 	//変数宣言
-	D3DXMATRIX mtxR, mtxS, mtxT, mtxIT, mtxW;
+	D3DXMATRIX mtxS, mtxT, mtxIT, mtxW;;
 	//変数に関数を使用して値を代入する
 	D3DXMatrixScaling(&mtxS, scaleX, scaleY, 1.0f);
 
 	//平移矩陣
-	/*D3DXMatrixTranslation(&mtxT, -centerX, -centerY, 0.0f);
-	D3DXMatrixTranslation(&mtxIT, centerX, centerY, 0.0f);*/
+	D3DXMatrixTranslation(&mtxT, -dx, -dy, 0.0f);
+	D3DXMatrixTranslation(&mtxIT, dy, dy, 0.0f);
 
-	//mtxW = mtxT * mtxR * mtxS * mtxIT;
+	mtxW = mtxT * mtxS * mtxIT;
+
 	//座標変換する
-	//D3DXVec4Transform(&v[0].position, &v[0].position, &mtrxR);
 	//					出力				入力
 	for (int i = 0; i < 4; i++) {
-		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxS);
+		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxW);
 	}
 
 	pDevice->SetFVF(FVF_VERTEX2D);
@@ -243,7 +320,6 @@ void Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cu
 
 	mtxW = mtxT * mtxR * mtxS * mtxIT;
 	//座標変換する
-	//D3DXVec4Transform(&v[0].position, &v[0].position, &mtrxR);
 	//					出力				入力
 	for (int i = 0; i < 4; i++) {
 		D3DXVec4Transform(&v[i].position, &v[i].position, &mtxW);

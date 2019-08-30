@@ -5,7 +5,10 @@
 void Sprite_Init();
 void Sprite_Uninit();
 
+//No Cut Methods
 void Sprite_Draw(int textureID, float dx, float dy);
+void Sprite_Draw(int textureID, float dx, float dy, float centerX, float centerY, float angle, int alpha, bool dummyFlag);
+void Sprite_Draw(int textureID, float dx, float dy, float scaleX, float scaleY, int alpha);
 void Sprite_Draw(int textureID, float dx, float dy, float centerX, float centerY, float angle, float scaleX, float scaleY, float scaleZ);
 
 //Cut Methods

@@ -9,6 +9,7 @@
 #include "input.h"
 #include "enemy.h"
 #include "tama.h"
+#include "effectpdead.h"
 #include "debug_font.h"
 
 //player parameter
@@ -53,10 +54,10 @@ void playerInit() {
 
 	move = 1.f;
 	shootingCD = 1.f;
-	power = 1;
+	power = 8;
 	tamaInit();
 
-	life = 1;
+	life = 5;
 	damageFlag = false;
 	endFlag = false;
 	damageCounter = 0;
@@ -324,10 +325,21 @@ void setPlayerShotFlag(int index, bool flag) {
 
 void setPlayerDamageFlag() {
 	damageFlag = true;
+	life--;
+	//play player destroy effect
+	pDeadEffectSetFlag(g_player_position.x, g_player_position.y);
 }
 
 bool getPlayerDamageFlag() {
 	return damageFlag;
+}
+
+int  getPlayerLife() {
+	return life;
+}
+
+void setPlayerLife() {
+	life++;
 }
 
 bool checkShotOutOfRange(int index) {

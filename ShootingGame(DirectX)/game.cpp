@@ -10,7 +10,10 @@
 #include "texture.h"
 #include "player.h"
 #include "enemy.h"
+#include "item.h"
 #include "collision.h"
+#include "scoreboard.h"
+#include "effectpdead.h"
 #include "debug_font.h"
 
 int g_FrameCount;				//フレームカウンター
@@ -57,6 +60,9 @@ void gameInit() {
 
 	playerInit();
 	enemyInit();
+	itemInit();
+	scoreBoardInit();
+	pDeadEffectInit();
 }
 
 void gameUninit() {
@@ -77,7 +83,10 @@ void gameUpdate() {
 	
 	playerUpdate();
 	enemyUpdate();
+	itemUpdate();
 	checkCollisionAll();
+	if (pDeadEffectGetFlag())
+		pDeadEffectUpdate();
 	/*if (inTitlePhrase) {
 
 	}
@@ -94,4 +103,8 @@ void gameDraw() {
 
 	playerDraw();
 	enemyDraw();
+	itemDraw();
+	scoreBoardDraw();
+	if (pDeadEffectGetFlag())
+		pDeadEffectDraw();
 }
