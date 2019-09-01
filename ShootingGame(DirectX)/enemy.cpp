@@ -4,7 +4,7 @@
 #include <d3dx9.h>
 #include <iostream>
 #include "enemy.h"
-#include "main.h"
+#include "explosion.h"
 #include "sprite.h"
 #include "texture.h"
 #include "mydirect3d.h"
@@ -372,7 +372,8 @@ void getEnemyPosition(int index, float *x, float *y) {
 bool getEnemyPositions(int index, float *x, float *y) {
 	float tempX, tempY;
 
-	if (getEnemyDeadFlag(index))
+	//if the enemy was dead or the enemy doesn't appears yet, return false
+	if (getEnemyDeadFlag(index) || (getEnemyInTime(index) > g_FrameCount))
 		return false;
 
 	getEnemyPosition(index, &tempX, &tempY);
@@ -403,6 +404,8 @@ int getEnemyShotType(int enemyIndex) {
 
 void setEnemyDeadFlag(int index) {
 	enemy[index].deadFlag = true;
+	//do enemy destroy effect
+	CreateExplosion(enemy[index].enemy_position.x, enemy[index].enemy_position.y);
 }
 
 bool getEnemyDeadFlag(int index) {

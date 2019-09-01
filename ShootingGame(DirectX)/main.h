@@ -17,6 +17,8 @@
 #define TAMA_INITY				30
 #define TAMA_SHAKE				15
 
+#define BOSS_SHAKE				20
+
 #define ITEM_NUM				100
 
 #define PLAYER_COLLISIONRAD		10
@@ -27,6 +29,17 @@
 #define ESHOT0_COLLISIONRAD		25
 #define ESHOT1_COLLISIONRAD		16
 #define ESHOT2_COLLISIONRAD		25
+
+//Enemy(Include boss) bullet struct
+struct E_SHOT {
+	bool flag;			//弾が発射中かどうか
+	double x;			//x座標
+	double y;			//y座標
+	double radian;		//進む角度
+	int width, height;	//画像の幅と高さ
+	int pattern;		//ショットパターン
+	int speed;			//弾スピード
+};
 
 //position       color            texture
 #define FVF_VERTEX2D	(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)

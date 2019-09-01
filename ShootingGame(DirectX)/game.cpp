@@ -5,12 +5,14 @@
 #include "main.h"
 #include "mydirect3d.h"
 #include "system_timer.h"
+#include "explosion.h"
 #include "input.h"
 #include "sprite.h"
 #include "texture.h"
 #include "player.h"
 #include "enemy.h"
 #include "item.h"
+#include "boss.h"
 #include "collision.h"
 #include "scoreboard.h"
 #include "effectpdead.h"
@@ -60,9 +62,11 @@ void gameInit() {
 
 	playerInit();
 	enemyInit();
+	bossInit();
 	itemInit();
 	scoreBoardInit();
 	pDeadEffectInit();
+	explosionInit();
 }
 
 void gameUninit() {
@@ -83,10 +87,12 @@ void gameUpdate() {
 	
 	playerUpdate();
 	enemyUpdate();
+	bossMove();
 	itemUpdate();
 	checkCollisionAll();
 	if (pDeadEffectGetFlag())
 		pDeadEffectUpdate();
+	explosionUpdate();
 	/*if (inTitlePhrase) {
 
 	}
@@ -103,8 +109,10 @@ void gameDraw() {
 
 	playerDraw();
 	enemyDraw();
+	bossDraw();
 	itemDraw();
 	scoreBoardDraw();
 	if (pDeadEffectGetFlag())
 		pDeadEffectDraw();
+	explosionDraw();
 }

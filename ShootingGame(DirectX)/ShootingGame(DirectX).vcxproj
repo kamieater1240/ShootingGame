@@ -126,10 +126,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="boss.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="debug_font.cpp" />
     <ClCompile Include="effectpdead.cpp" />
     <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="explosion.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="item.cpp" />
@@ -144,10 +146,12 @@
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="boss.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="debug_font.h" />
     <ClInclude Include="effectpdead.h" />
     <ClInclude Include="enemy.h" />
+    <ClInclude Include="explosion.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="item.h" />

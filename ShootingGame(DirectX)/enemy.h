@@ -4,16 +4,7 @@
 #define ENEMY_NUM   4
 #define ENEMY_SNUM 50
 
-struct E_SHOT {
-	bool flag;			//弾が発射中かどうか
-	double x;			//x座標
-	double y;			//y座標
-	double radian;		//進む角度
-	int width, height;	//画像の幅と高さ
-	int pattern;		//ショットパターン
-	int speed;			//弾スピード
-};
-
+#include "main.h"
 
 struct ENEMY {
 	//座標

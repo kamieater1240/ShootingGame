@@ -54,7 +54,7 @@ void playerInit() {
 
 	move = 1.f;
 	shootingCD = 1.f;
-	power = 8;
+	power = 10;
 	tamaInit();
 
 	life = 5;
@@ -106,7 +106,10 @@ void playerDraw() {
 	//Draw Bullets
 	for (int i = 0; i < PSHOT_NUM; ++i) {
 		if (shot[i].flag) {
-			Sprite_Draw(shot[i].gh, shot[i].x, shot[i].y, 0, 215, shot[i].width, shot[i].height, shot[i].x, shot[i].y, shot[i].radian + D3DX_PI / 2.f);
+			if (shot[i].type == 0)
+				Sprite_Draw(shot[i].gh, shot[i].x, shot[i].y, 0, 215, shot[i].width, shot[i].height, shot[i].x, shot[i].y, shot[i].radian + D3DX_PI / 2.f);
+			else
+				Sprite_Draw(shot[i].gh, shot[i].x, shot[i].y, 34, 215, shot[i].width, shot[i].height, shot[i].x, shot[i].y, shot[i].radian + D3DX_PI / 2.f);
 		}
 	}
 
