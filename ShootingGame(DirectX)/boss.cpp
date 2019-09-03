@@ -6,6 +6,7 @@
 #include "player.h"
 #include "sprite.h"
 #include "texture.h"
+#include "sound.h"
 #include "mydirect3d.h"
 #include "debug_font.h"
 
@@ -18,8 +19,10 @@ D3DXVECTOR2 boss_position, prev_boss_position;
 
 //moving pattern now
 int move_pattern;
+int prev_move_pattern;
 //shooting pattern now
 int shot_pattern;
+int prev_shot_pattern;
 
 //bullets
 E_SHOT bossShots[BOSS_SHOTNUM];
@@ -45,11 +48,18 @@ bool boss_aliveFlag;
 //shot flag
 bool boss_shotFlag;
 int bossShotCount;
+
+//Boss hp
+int bossHp;
+int prevBossHp;
+
+//Invincible flag
+bool bossInvincible;
 //===================================//
 
 
 void bossInit() {
-	boss_position = prev_boss_position = { 200.f, -100.f };
+	boss_position = prev_boss_position = { 400.f, -100.f };
 
 	Texture_SetLoadFile("Assets/Textures/boss.png", 240, 240);
 	Texture_SetLoadFile("Assets/Textures/bullet.png", 1024, 1024);
@@ -73,7 +83,9 @@ void bossInit() {
 	horizontalRaise = 2;
 	angle = 0;
 	move_pattern = 0;
+	prev_move_pattern = 0;
 	shot_pattern = 0;
+	prev_shot_pattern = 0;
 
 	nextMoveX = 0;
 	nextMoveY = 180;
@@ -87,44 +99,66 @@ void bossInit() {
 	boss_damageFlag = false;
 	boss_aliveFlag = true;
 	boss_shotFlag = false;
+
+	bossHp = BOSS_HP;
+	prevBossHp = bossHp;
+
+	bossInvincible = false;
 }
 
 void bossDraw() {
 
-	//Draw Boss' bullets
-	for (int i = 0; i < BOSS_SHOTNUM; i++) {
-		if (bossShots[i].flag) {
-			Sprite_Draw(g_bossShot_textureID, bossShots[i].x, bossShots[i].y, 0, 44, bossShots[i].width, bossShots[i].height, bossShots[i].x, bossShots[i].y, bossShots[i].radian + D3DX_PI / 2.f);
+	if (boss_aliveFlag) {
+		//Draw Boss
+		if (!boss_damageFlag) {		//Normal Phase
+			Sprite_Draw(g_boss_textureID, boss_position.x, boss_position.y);
+		}
+		else {						//Get Damage Phase 
+
 		}
 	}
 
-	//Draw Boss
-	if (!boss_damageFlag) {		//Normal Phase
-		Sprite_Draw(g_boss_textureID, boss_position.x, boss_position.y);
-	}
-	else {						//Get Damage Phase 
-
+	//Draw Boss' bullets
+	for (int i = 0; i < BOSS_SHOTNUM; i++) {
+		if (bossShots[i].flag) {
+			switch (bossShots[i].pattern)
+			{
+			case 0:
+			case 1:
+				Sprite_Draw(g_bossShot_textureID, bossShots[i].x, bossShots[i].y, 0, 44, bossShots[i].width, bossShots[i].height, bossShots[i].x, bossShots[i].y, bossShots[i].radian + D3DX_PI / 2.f);
+				break;
+			case 2:
+				Sprite_Draw(g_bossShot_textureID, bossShots[i].x, bossShots[i].y, 0, 82, 42, 42, bossShots[i].x, bossShots[i].y, bossShots[i].radian + D3DX_PI / 2.f);
+				break;
+			default: break;
+			}
+		}
 	}
 
 	boss_damageFlag = false;
 }
 
 void bossMove() {
-	switch (move_pattern)
-	{
-	case 0:
-		bossAppear();
-		break;
-	case 1:
-		bossMovePattern1();
-		break;
-	case 2:
-		bossMovePattern2();
-		break;
-	case 3:
-		bossMovePattern3();
-		break;
-	default: break;
+	if (boss_aliveFlag) {
+		switch (move_pattern)
+		{
+		case 0:
+			bossAppear();
+			break;
+		case 1:
+			bossMovePattern1();
+			break;
+		case 2:
+			bossMovePattern2();
+			break;
+		case 3:
+			bossMovePattern3();
+			break;
+		case 4:
+			bossMoveToDefault();
+			break;
+		default: break;
+		}
 	}
 
 	if (boss_shotFlag)
@@ -143,6 +177,27 @@ void bossMoveInit(float nextX, float nextY, int state) {
 	p3_state = state;
 }
 
+void bossMoveToDefault() {
+	float temp;
+
+	angle += 2;
+
+	temp = sin(angle*D3DX_PI / 180);
+
+	boss_position.x = prev_boss_position.x + temp * nextMoveX;
+	boss_position.y = prev_boss_position.y + temp * nextMoveY;
+
+	if (angle == 90) {
+		setBossMovePattern(prev_move_pattern+1);
+		setBossShotPattern(prev_shot_pattern+1);
+		bossInvincible = false;
+
+		if (move_pattern == 3) {
+			bossMoveInit(400, 160, 2);
+		}
+	}
+}
+
 void bossAppear() {
 	float temp;
 
@@ -150,7 +205,7 @@ void bossAppear() {
 
 	temp = sin(angle*D3DX_PI / 180.f);
 
-	boss_position.x = 200.f;
+	boss_position.x = 400.f;
 	boss_position.y = prev_boss_position.y + temp * nextMoveY;
 
 	//When angle == 90, sin(angle) equals 1, so it means the boss has arrived its destination
@@ -163,7 +218,7 @@ void bossAppear() {
 
 void bossMovePattern1() {
 
-	boss_position.x = 200.f;
+	boss_position.x = 400.f;
 
 	angle += angleRaise;
 	boss_position.y = 80.f + sin(angle*D3DX_PI / 180.f) * BOSS_SHAKE;
@@ -178,11 +233,11 @@ void bossMovePattern2() {
 	if (!waitFlag) {
 		boss_position.x += horizontalRaise;
 
-		if (boss_position.x == 70) {
+		if (boss_position.x == 170) {
 			horizontalRaise = 2;
 			waitFlag = true;
 		}
-		else if (boss_position.x == 330) {
+		else if (boss_position.x == 730) {
 			horizontalRaise = -2;
 			waitFlag = true;
 		}
@@ -210,11 +265,16 @@ void bossMovePattern3() {
 	if (angle == 90) {
 		if (p3_state == 0)
 			bossMoveInit(70.f, 80.f, 1);
-		else if (p3_state == 0)
+		else if (p3_state == 1)
 			bossMoveInit(200.f, 160.f, 2);
 		else
 			bossMoveInit(330.f, 80.f, 0);
 	}
+}
+
+void setBossMovePattern(int pattern) {
+	prev_move_pattern = move_pattern;
+	move_pattern = pattern;
 }
 
 void bossShot() {
@@ -229,47 +289,79 @@ void bossShot() {
 	static float trad;
 
 	if (!boss_damageFlag) {
-		getPlayerPosition(&playerX, &playerY);
+		if (boss_aliveFlag) {
+			getPlayerPosition(&playerX, &playerY);
 
-		if (bossShotCount == 0)
-			trad = atan2(playerY - boss_position.y, playerX - boss_position.x);
+			if (bossShotCount == 0)
+				trad = atan2(playerY - boss_position.y, playerX - boss_position.x);
 
-		//Set the bullets
-		switch (shot_pattern)
-		{
-		case 0:
-			if (bossShotCount % 5 == 0 && bossShotCount <= 15) {
-				while ((index = shotSearch()) != -1) {
-					bossShots[index].pattern = 0;
-					bossShots[index].speed = 6;
+			//Set the bullets
+			switch (shot_pattern)
+			{
+			case 0:
+				if (bossShotCount % 5 == 0 && bossShotCount <= 15) {
+					while ((index = shotSearch()) != -1) {
+						bossShots[index].pattern = 0;
+						bossShots[index].speed = 6;
 
-					if (num == 0)
-						bossShots[index].radian = trad - (10 * D3DX_PI / 180.f);
-					else if (num == 1)
-						bossShots[index].radian = trad - (5 * D3DX_PI / 180.f);
-					else if (num == 2)
-						bossShots[index].radian = trad;
-					else if (num == 3)
-						bossShots[index].radian = trad + (5 * D3DX_PI / 180.f);
-					else if (num == 4)
-						bossShots[index].radian = trad + (10 * D3DX_PI / 180.f);
+						if (num == 0)
+							bossShots[index].radian = trad - (20 * D3DX_PI / 180.f);
+						else if (num == 1)
+							bossShots[index].radian = trad - (10 * D3DX_PI / 180.f);
+						else if (num == 2)
+							bossShots[index].radian = trad;
+						else if (num == 3)
+							bossShots[index].radian = trad + (10 * D3DX_PI / 180.f);
+						else if (num == 4)
+							bossShots[index].radian = trad + (20 * D3DX_PI / 180.f);
 
-					num++;
-
-					if (num == 5)
-						break;
+						num++;
+						if (num == 5)
+							break;
+					}
+					//Play enemy shot SE
+					PlaySound(SOUND_LABEL_SE_ESHOT);
 				}
+				break;
+			case 1:
+				if (bossShotCount % 8 == 0) {
+					trad = atan2(playerY - boss_position.y, playerX - boss_position.x);
+					while ((index = shotSearch()) != -1) {
+						bossShots[index].pattern = 1;
+						bossShots[index].speed = 1;
+						bossShots[index].radian = trad + ((rand() % 120) * D3DX_PI / 180.f) - (60 * D3DX_PI / 180.f);
+
+						num++;
+						if (num == 2)
+							break;
+					}
+					//Play enemy shot SE
+					PlaySound(SOUND_LABEL_SE_ESHOT);
+				}
+				break;
+			case 2:
+				if (bossShotCount % 30 == 0) {
+					trad = atan2(playerY - boss_position.y, playerX - boss_position.x);
+					while ((index = shotSearch()) != -1) {
+						bossShots[index].pattern = 2;
+						bossShots[index].speed = 2;
+						bossShots[index].radian = trad + num * ((360 / 20) * D3DX_PI / 180.f);
+
+						num++;
+						if (num == 20)
+							break;
+					}
+					//Play enemy shot SE
+					PlaySound(SOUND_LABEL_SE_ESHOT);
+				}
+				break;
+			case 3:
+				break;
+			default: break;
 			}
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		default: break;
 		}
 
+		//Move the bullets
 		for (int i = 0; i < BOSS_SHOTNUM; i++) {
 			if (bossShots[i].flag) {
 				switch (bossShots[i].pattern)
@@ -282,13 +374,21 @@ void bossShot() {
 						shotCountFlag = true;
 					break;
 				case 1:
+					bossShots[i].x += cos(bossShots[i].radian) * bossShots[i].speed;
+					bossShots[i].y += sin(bossShots[i].radian) * bossShots[i].speed;
 					break;
 				case 2:
+					bossShots[i].x += cos(bossShots[i].radian) * bossShots[i].speed;
+					bossShots[i].y += sin(bossShots[i].radian) * bossShots[i].speed;
 					break;
 				case 3:
 					break;
 				default: break;
 				}
+			}
+
+			if (bossShotRangeCheck(i)) {
+				bossShots[i].flag = false;
 			}
 		}
 
@@ -312,6 +412,11 @@ void bossShotPattern3() {
 
 }
 
+void setBossShotPattern(int pattern) {
+	prev_shot_pattern = shot_pattern;
+	shot_pattern = pattern;
+}
+
 int shotSearch() {
 
 	for (int i = 0; i < BOSS_SHOTNUM; i++) {
@@ -326,15 +431,73 @@ int shotSearch() {
 	return -1;
 }
 
+bool bossShotRangeCheck(int index) {
+	if (bossShots[index].x < 50 || bossShots[index].x > 850 || bossShots[index].y < -10 || bossShots[index].y > 900)
+		return true;
+	else
+		return false;
+}
+
 
 void setBossDamageFlag() {
 
 }
 
 void setBossFlag(bool flag) {
-
+	boss_aliveFlag = flag;
 }
 
 bool getBossFlag() {
-	return true;
+	return boss_aliveFlag;
+}
+
+bool getBossInvincibleFlag() {
+	return bossInvincible;
+}
+
+void getBossPosition(float* x, float *y) {
+	*x = boss_position.x;
+	*y = boss_position.y;
+}
+
+bool getBossShotPosition(int index, float *x, float *y, int *type) {
+	if (bossShots[index].flag) {
+		*x = bossShots[index].x;
+		*y = bossShots[index].y;
+		*type = bossShots[index].type;
+		return true;
+	}
+	else
+		return false;
+}
+
+void setBossShotFlag(int index, bool flag) {
+	bossShots[index].flag = flag;
+}
+
+int setBossHp(int damage) {
+	prevBossHp = bossHp;
+	bossHp -= damage;
+	if (bossHp < 0)
+		bossHp = 0;
+	return bossHp;
+}
+
+int  getPrevBossHp() {
+	return prevBossHp;
+}
+
+void setBossDamageSetting() {
+	prev_boss_position.x = boss_position.x;
+	prev_boss_position.y = boss_position.y;
+
+	nextMoveX = 400.f - boss_position.x;
+	nextMoveY = 160.f - boss_position.y;
+
+	angle = 0;
+
+	bossInvincible = true;
+
+	setBossMovePattern(4);
+	setBossShotPattern(4);
 }

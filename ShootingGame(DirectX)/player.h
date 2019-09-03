@@ -26,6 +26,7 @@ bool getPlayerShotPosition(int index, float *x, float *y);
 void setPlayerShotFlag(int index, bool flag);
 void setPlayerDamageFlag();
 bool getPlayerDamageFlag();
+bool getPlayerInvincibleFlag();
 int  getPlayerLife();
 void setPlayerLife();
 bool checkShotOutOfRange(int index);

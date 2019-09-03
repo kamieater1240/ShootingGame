@@ -3,7 +3,7 @@
 
 #define SCREEN_WIDTH			1280
 #define SCREEN_HEIGHT			900
-#define GAME_WIDTH				700
+#define GAME_WIDTH				800
 #define GAME_HEIGHT				850
 
 #define PLAYER_INITX			400
@@ -17,12 +17,14 @@
 #define TAMA_INITY				30
 #define TAMA_SHAKE				15
 
+#define BOSS_SHOTNUM			500
 #define BOSS_SHAKE				20
 
 #define ITEM_NUM				100
 
 #define PLAYER_COLLISIONRAD		10
 #define ENEMY_COLLISIONRAD		32
+#define BOSS_COLLISIONRAD		100
 #define ITEM_COLLISIONRAD		16
 
 #define PSHOT_COLLISIONRAD		10
@@ -39,6 +41,7 @@ struct E_SHOT {
 	int width, height;	//画像の幅と高さ
 	int pattern;		//ショットパターン
 	int speed;			//弾スピード
+	int type;			//弾の種類
 };
 
 //position       color            texture

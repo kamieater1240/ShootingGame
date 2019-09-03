@@ -8,6 +8,7 @@ typedef struct Circle_tag {
 
 bool circleCollsion(const Circle* pA, const Circle* pB);
 void checkCollisionAll();
+void checkBossCollision();
 
 #endif // !COLLISION_H_
 

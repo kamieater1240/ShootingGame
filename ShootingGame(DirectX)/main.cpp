@@ -11,6 +11,7 @@
 #include "input.h"
 #include "game.h"
 #include "texture.h"
+#include "sound.h"
 
 #define CLASS_NAME		"GameWindow"
 #define WINDOW_CAPTION	"弾幕シューティングゲーム"
@@ -133,6 +134,7 @@ bool Init(HWND hWnd) {
 	MyDirect3D_Init(hWnd);
 	Device = MyDirect3D_GetDevice();
 
+	InitSound(hWnd);
 	gameInit();
 
 	return true;
@@ -141,6 +143,7 @@ bool Init(HWND hWnd) {
 void Uninit(void) {
 	if (Device != NULL) {
 		Device->Release();
+		UninitSound();
 	}
 }
 

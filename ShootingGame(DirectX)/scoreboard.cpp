@@ -27,7 +27,7 @@ void scoreBoardDraw() {
 	//Draw the board
 	for (int i = 0; i < 4; i++) {
 		//Sprite_Draw(int textureID, float dx, float dy, int cut_x, int cut_y, int cut_w, int cut_h)
-		Sprite_Draw(g_boardTexID, 900, 50 + 100 * i, 0, i * 47, 239, 47);
+		Sprite_Draw(g_boardTexID, 950, 50 + 100 * i, 0, i * 47, 239, 47);
 	}
 
 	//Draw the scores
@@ -51,7 +51,7 @@ void scoreBoardDraw() {
 		}
 
 		if (score == 0)
-			Sprite_Draw(g_numberTexID, 800, 100 + 100 * i, 0, 0, 40, 40);
+			Sprite_Draw(g_numberTexID, 850, 100 + 100 * i, 0, 0, 40, 40);
 		else {
 			int scores[10], ketaNum = 0;
 			while (score != 0) {
@@ -60,7 +60,7 @@ void scoreBoardDraw() {
 			}
 
 			for (int j = ketaNum - 1; j >= 0; j--) {
-				Sprite_Draw(g_numberTexID, 800 + 40 * (ketaNum - j - 1), 100 + 100 * i, scores[j] * 40, 0, 40, 40);
+				Sprite_Draw(g_numberTexID, 850 + 40 * (ketaNum - j - 1), 100 + 100 * i, scores[j] * 40, 0, 40, 40);
 			}
 		}
 	}

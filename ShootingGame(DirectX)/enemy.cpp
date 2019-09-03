@@ -351,14 +351,14 @@ void enemyShot() {
 }
 
 bool checkOutOfRange(ENEMY enemy) {
-	if (enemy.enemy_position.x < 50 || enemy.enemy_position.x > 750 || enemy.enemy_position.y < -10 || enemy.enemy_position.y > 850)
+	if (enemy.enemy_position.x < 50 || enemy.enemy_position.x > 850 || enemy.enemy_position.y < -10 || enemy.enemy_position.y > 900)
 		return true;
 	else
 		return false;
 }
 
 bool checkEnemyShotOutOfRange(ENEMY enemy, int index) {
-	if (enemy.shot[index].x < 50 || enemy.shot[index].x > 750 || enemy.shot[index].y < -10 || enemy.shot[index].y > 850)
+	if (enemy.shot[index].x < 50 || enemy.shot[index].x > 850 || enemy.shot[index].y < -10 || enemy.shot[index].y > 900)
 		return true;
 	else
 		return false;

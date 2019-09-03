@@ -139,6 +139,7 @@
     <ClCompile Include="mydirect3d.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="scoreboard.cpp" />
+    <ClCompile Include="sound.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="SpriteAnim.cpp" />
     <ClCompile Include="system_timer.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="mydirect3d.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="scoreboard.h" />
+    <ClInclude Include="sound.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="SpriteAnim.h" />
     <ClInclude Include="system_timer.h" />

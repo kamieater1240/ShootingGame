@@ -16,6 +16,7 @@
 #include "collision.h"
 #include "scoreboard.h"
 #include "effectpdead.h"
+#include "sound.h"
 #include "debug_font.h"
 
 int g_FrameCount;				//フレームカウンター
@@ -40,11 +41,11 @@ void gameInit() {
 	inTitlePhrase = true;
 	inGamePhrase = false;
 
-	Texture_SetLoadFile("Assets/Textures/background.png", SCREEN_WIDTH, SCREEN_HEIGHT);
+	Texture_SetLoadFile("Assets/Textures/background1.png", SCREEN_WIDTH, SCREEN_HEIGHT);
 	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
 	Texture_Load();
 
-	g_BG_textureID = Texture_GetID("Assets/Textures/background.png");
+	g_BG_textureID = Texture_GetID("Assets/Textures/background1.png");
 	g_gameBG_textureID = Texture_GetID("Assets/Textures/gameBG.png");
 
 	LPDIRECT3DDEVICE9 myDevice = MyDirect3D_GetDevice();
@@ -67,6 +68,8 @@ void gameInit() {
 	scoreBoardInit();
 	pDeadEffectInit();
 	explosionInit();
+
+	PlaySound(SOUND_LABEL_BOSSBGM);
 }
 
 void gameUninit() {
@@ -90,6 +93,7 @@ void gameUpdate() {
 	bossMove();
 	itemUpdate();
 	checkCollisionAll();
+	checkBossCollision();
 	if (pDeadEffectGetFlag())
 		pDeadEffectUpdate();
 	explosionUpdate();
@@ -104,15 +108,16 @@ void gameUpdate() {
 
 void gameDraw() {
 	
-	Sprite_Draw(g_BG_textureID, SCREEN_WIDTH/2.f, SCREEN_HEIGHT/2.f);
 	Sprite_Draw(g_gameBG_textureID, 50.f + GAME_WIDTH/2.f, SCREEN_HEIGHT/2.f);
 
 	playerDraw();
 	enemyDraw();
 	bossDraw();
 	itemDraw();
-	scoreBoardDraw();
 	if (pDeadEffectGetFlag())
 		pDeadEffectDraw();
 	explosionDraw();
+
+	Sprite_Draw(g_BG_textureID, SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
+	scoreBoardDraw();
 }

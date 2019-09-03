@@ -10,6 +10,7 @@
 #include "enemy.h"
 #include "tama.h"
 #include "effectpdead.h"
+#include "sound.h"
 #include "debug_font.h"
 
 //player parameter
@@ -40,6 +41,10 @@ int shotCount;
 float shootingCD;
 //Power
 int power;
+//Invincible Count
+int invincibleCount;
+//Invincible Flag
+bool isInvincible;
 
 void playerInit() {
 
@@ -54,7 +59,7 @@ void playerInit() {
 
 	move = 1.f;
 	shootingCD = 1.f;
-	power = 10;
+	power = 9;
 	tamaInit();
 
 	life = 5;
@@ -77,6 +82,8 @@ void playerInit() {
 	}
 	shotCount = 0;
 
+	invincibleCount = 0;
+	isInvincible = false;
 }
 
 void playerUninit() {
@@ -92,10 +99,29 @@ void playerUpdate() {
 	playerShot();
 	++shotCount;
 
+	//When in damage mode
+	if (damageFlag) {
+		damageCounter++;
+		if (damageCounter == 80) {
+			damageFlag = false;
+			damageCounter = 0;
+			isInvincible = true;
+		}
+	}
+
+	//When in Invincible mode
+	if (isInvincible) {
+		invincibleCount++;
+		if (invincibleCount == 80) {
+			isInvincible = false;
+			invincibleCount = 0;
+		}
+	}
+
 	//境界判定
 	if (!damageFlag) {
-		g_player_position.x = max(g_player_position.x, 30.f + PLAYER_WIDTH / 2.f);
-		g_player_position.x = min(g_player_position.x, 775.f - PLAYER_WIDTH / 2.f);
+		g_player_position.x = max(g_player_position.x, 50.f + PLAYER_WIDTH / 2.f);
+		g_player_position.x = min(g_player_position.x, 850.f - PLAYER_WIDTH / 2.f);
 		g_player_position.y = max(g_player_position.y, 25.f + PLAYER_HEIGHT / 2.f);
 		g_player_position.y = min(g_player_position.y, SCREEN_HEIGHT - 25.f - PLAYER_HEIGHT / 2.f);
 	}
@@ -118,13 +144,14 @@ void playerDraw() {
 		if (damageCounter == 0) //Set the player a little below the initial position
 			g_player_position = D3DXVECTOR2(PLAYER_INITX, PLAYER_INITY + 158);
 		if (damageCounter > 20) {
-			if (damageCounter % 2 == 0)
+			if (damageCounter % 4 == 0)
 				Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100, 140);
 		}
-		damageCounter++;
-		if (damageCounter == 80) {
-			damageFlag = false;
-			damageCounter = 0;
+	}
+	else if (isInvincible) {	//Invincible Phase
+		if (invincibleCount >= 0) {
+			if (invincibleCount % 4 == 0)
+				Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100, 140);
 		}
 	}
 	else {				//Normal Phase
@@ -198,6 +225,8 @@ void playerShot() {
 	if (!damageFlag) {
 		//キーが押されててかつ、5ループに一回発射
 		if (Keyboard_IsPress(DIK_Z) && shotCount % 5 == 0) {
+			PlaySound(SOUND_LABEL_SE_PSHOT);
+
 			for (int i = 0; i < PSHOT_NUM; ++i) {
 				if (shot[i].flag == false) {
 					if (power < 5) {
@@ -337,6 +366,10 @@ bool getPlayerDamageFlag() {
 	return damageFlag;
 }
 
+bool getPlayerInvincibleFlag() {
+	return isInvincible;
+}
+
 int  getPlayerLife() {
 	return life;
 }
@@ -346,7 +379,7 @@ void setPlayerLife() {
 }
 
 bool checkShotOutOfRange(int index) {
-	if (shot[index].y < -10 || shot[index].x < 50 || shot[index].x > 750)
+	if (shot[index].y < -10 || shot[index].y > 900 || shot[index].x < 50 || shot[index].x > 850)
 		return true;
 	else
 		return false;
