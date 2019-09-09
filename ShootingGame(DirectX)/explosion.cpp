@@ -18,7 +18,6 @@ void explosionInit() {
 	for (int i = 0; i < EXPLOSION_MAX; i++) {
 		explosions[i].isUse = false;
 		explosions[i].textureID = Texture_GetID("Assets/Textures/enemy-death.png");
-		explosions[i].counter = 0;
 	}
 }
 
@@ -55,6 +54,7 @@ void CreateExplosion(float x, float y) {
 			explosions[i].isUse = true;
 			explosions[i].position.x = x;
 			explosions[i].position.y = y;
+			explosions[i].counter = -1;
 			break;
 		}
 	}

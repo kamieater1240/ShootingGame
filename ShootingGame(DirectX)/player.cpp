@@ -8,6 +8,7 @@
 #include "mydirect3d.h"
 #include "input.h"
 #include "enemy.h"
+#include "boss.h"
 #include "tama.h"
 #include "effectpdead.h"
 #include "sound.h"
@@ -59,7 +60,7 @@ void playerInit() {
 
 	move = 1.f;
 	shootingCD = 1.f;
-	power = 9;
+	power = 10;
 	tamaInit();
 
 	life = 5;
@@ -301,7 +302,7 @@ void playerShot() {
 
 	//nearest enemy's radian
 	float tRadian;
-	//nearest enemy's index and position
+	//nearest enemy's index and position, if -1 means no enemy, if -2 means found boss
 	int eIndex;
 	float eX, eY;
 	eIndex = searchNearbyEnemy();
@@ -318,6 +319,10 @@ void playerShot() {
 				//There are no enemies
 				if (eIndex == -1)
 					tRadian = -D3DX_PI / 2.f;
+				else if (eIndex == -2) {
+					getBossPosition(&eX, &eY);
+					tRadian = atan2(eY - shot[i].y, eX - shot[i].x);
+				}
 				else {
 					getEnemyPositions(eIndex, &eX, &eY);
 					tRadian = atan2(eY - shot[i].y, eX - shot[i].x);
@@ -400,12 +405,13 @@ void showTama() {
 		tamaAll(g_player_position.x, g_player_position.y);
 }
 
+//Search enemies(include Boss)
 int searchNearbyEnemy() {
 	int nearEnemyIndex = -1;
-	float nearResult;
-	float eX, eY, tX, tY;
+	float nearResult = 100000.f;
+	float eX, eY, tX, tY, bX, bY;
 
-	for (int i = 0; i < ENEMY_NUM; i++) {
+	/*for (int i = 0; i < ENEMY_NUM; i++) {
 		if (!getEnemyPositions(i, &eX, &eY))
 			continue;
 
@@ -422,6 +428,19 @@ int searchNearbyEnemy() {
 			nearEnemyIndex = i;
 			nearResult = tX * tX + tY * tY;
 		}
+	}*/
+
+	if (getBossFlag()) {
+		getBossPosition(&bX, &bY);
+		tX = bX - g_player_position.x;
+		tY = bY - g_player_position.y;
+		if (nearEnemyIndex == -1) {
+			nearEnemyIndex = -2;
+			return nearEnemyIndex;
+		}
+		if (nearEnemyIndex != -1 && nearResult > tX * tX + tY * tY) {
+			nearEnemyIndex = -2;
+		}
 	}
 	return nearEnemyIndex;
 }
@@ -435,10 +454,14 @@ void tamaShotSet(int index) {
 	tY = tamaGetPosition();
 
 	tIndex = searchNearbyEnemy();
-	if (tIndex == -1) {
+	if (tIndex == -1) {				//No enemy was found
 		tRadian = -D3DX_PI / 2.f;
 	}
-	else {
+	else if (tIndex == -2) {		//Found boss
+		getBossPosition(&eX, &eY);
+		tRadian = atan2(eY - tY + TAMA_INITY, eX - g_player_position.x + (toggle*TAMA_INITX));
+	}
+	else {							//Found enemy
 		getEnemyPositions(tIndex, &eX, &eY);
 		tRadian = atan2(eY - tY + TAMA_INITY, eX - g_player_position.x + (toggle*TAMA_INITX));
 	}
