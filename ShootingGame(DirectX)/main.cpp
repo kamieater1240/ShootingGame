@@ -6,12 +6,13 @@
 #include <d3dx9.h>
 #include <time.h> 
 #include "main.h"
-#include "mydirect3d.h"
-#include "system_timer.h"
-#include "input.h"
 #include "game.h"
-#include "texture.h"
+#include "fade.h"
+#include "scene.h"
+#include "mydirect3d.h"
+#include "input.h"
 #include "sound.h"
+#include "system_timer.h"
 
 #define CLASS_NAME		"GameWindow"
 #define WINDOW_CAPTION	"弾幕シューティングゲーム"
@@ -135,7 +136,12 @@ bool Init(HWND hWnd) {
 	Device = MyDirect3D_GetDevice();
 
 	InitSound(hWnd);
-	gameInit();
+	SystemTimer_Initialize();
+	SystemTimer_Start();
+	fadeInit();
+
+	Fade(SCENE_GAME);
+	//gameInit();
 
 	return true;
 }
@@ -149,10 +155,22 @@ void Uninit(void) {
 
 void Update() {
 
-	//SpriteAnim_Update();
 	Keyboard_Update();
 
-	gameUpdate();
+	switch (getSceneState())
+	{
+	case SCENE_TITLE:
+		//titleUpdate();
+		break;
+	case SCENE_GAME:
+		gameUpdate();
+		break;
+	default:
+		break;
+	}
+
+	fadeUpdate();
+	//gameUpdate();
 }
 
 void Draw(void) {
@@ -166,7 +184,19 @@ void Draw(void) {
 	Device->BeginScene();	//BeginScene後一定要接EndScene
 	Device->SetFVF(FVF_VERTEX2D);
 
-	gameDraw();
+	switch (getSceneState())
+	{
+	case SCENE_TITLE:
+		//titleDraw();
+		break;
+	case SCENE_GAME:
+		gameDraw();
+		break;
+	default:
+		break;
+	}
+
+	//gameDraw();
 
 	Device->EndScene();		//在Call下一個BeginScene之前一定要接EndScene
 	Device->Present(NULL, NULL, NULL, NULL);

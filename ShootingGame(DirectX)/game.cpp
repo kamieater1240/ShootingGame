@@ -26,20 +26,15 @@ float g_FPS;					//FPS
 
 static int g_BG_textureID;
 static int g_gameBG_textureID;
-bool inTitlePhrase, inGamePhrase;
+float gameBG1Y, gameBG2Y;
 
 void gameInit() {
 	//==============================================System Initialization===============================================//
 	DebugFont_Initialize();
-	SystemTimer_Initialize();
-	SystemTimer_Start();
 
 	g_FrameCount = g_FPSBaseFrameCount = 0;
 	g_FPSBaseTime = SystemTimer_GetTime();
 	g_FPS = 0.0;
-
-	inTitlePhrase = true;
-	inGamePhrase = false;
 
 	Texture_SetLoadFile("Assets/Textures/background1.png", SCREEN_WIDTH, SCREEN_HEIGHT);
 	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
@@ -47,6 +42,9 @@ void gameInit() {
 
 	g_BG_textureID = Texture_GetID("Assets/Textures/background1.png");
 	g_gameBG_textureID = Texture_GetID("Assets/Textures/gameBG.png");
+
+	gameBG1Y = SCREEN_HEIGHT / 2.f;
+	gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
 
 	LPDIRECT3DDEVICE9 myDevice = MyDirect3D_GetDevice();
 
@@ -87,7 +85,14 @@ void gameUpdate() {
 		g_FPSBaseTime = time;
 		g_FPSBaseFrameCount = g_FrameCount;
 	}
-	
+
+	gameBG1Y += 5.f;
+	gameBG2Y += 5.f;
+	if (gameBG1Y >= (SCREEN_HEIGHT / 2.f) + Texture_GetWidth(g_gameBG_textureID))
+		gameBG1Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
+	if (gameBG2Y >= (SCREEN_HEIGHT / 2.f) + Texture_GetWidth(g_gameBG_textureID))
+		gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
+
 	playerUpdate();
 	enemyUpdate();
 	bossMove();
@@ -97,23 +102,18 @@ void gameUpdate() {
 	if (pDeadEffectGetFlag())
 		pDeadEffectUpdate();
 	explosionUpdate();
-	/*if (inTitlePhrase) {
-
-	}
-	else if (!inTitlePhrase && inGamePhrase) {
-
-	}*/
 
 }
 
 void gameDraw() {
-	
-	Sprite_Draw(g_gameBG_textureID, 50.f + GAME_WIDTH/2.f, SCREEN_HEIGHT/2.f);
 
+	Sprite_Draw(g_gameBG_textureID, 50.f + GAME_WIDTH / 2.f, gameBG1Y);
+	Sprite_Draw(g_gameBG_textureID, 50.f + GAME_WIDTH / 2.f, gameBG2Y);
+
+	itemDraw();
 	playerDraw();
 	enemyDraw();
 	bossDraw();
-	itemDraw();
 	if (pDeadEffectGetFlag())
 		pDeadEffectDraw();
 	explosionDraw();
