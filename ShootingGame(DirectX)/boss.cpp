@@ -188,8 +188,8 @@ void bossMoveToDefault() {
 	boss_position.y = prev_boss_position.y + temp * nextMoveY;
 
 	if (angle == 90) {
-		setBossMovePattern(prev_move_pattern+1);
-		setBossShotPattern(prev_shot_pattern+1);
+		setBossMovePattern(prev_move_pattern + 1);
+		setBossShotPattern(prev_shot_pattern + 1);
 		bossInvincible = false;
 
 		if (move_pattern == 3) {
@@ -320,7 +320,8 @@ void bossShot() {
 							break;
 					}
 					//Play enemy shot SE
-					PlaySound(SOUND_LABEL_SE_ESHOT);
+					if (bossShotCount == 0)
+						PlaySound(SOUND_LABEL_SE_ESHOT);
 				}
 				break;
 			case 1:

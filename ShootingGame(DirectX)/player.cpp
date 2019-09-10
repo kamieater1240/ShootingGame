@@ -363,6 +363,8 @@ void setPlayerShotFlag(int index, bool flag) {
 void setPlayerDamageFlag() {
 	damageFlag = true;
 	life--;
+	if (life < 0)
+		life = 0;
 	//play player destroy effect
 	pDeadEffectSetFlag(g_player_position.x, g_player_position.y);
 }
@@ -381,6 +383,8 @@ int  getPlayerLife() {
 
 void setPlayerLife() {
 	life++;
+	if (life > 9)
+		life = 9;
 }
 
 bool checkShotOutOfRange(int index) {

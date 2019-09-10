@@ -7,5 +7,7 @@ void gameInit();
 void gameUninit();
 void gameUpdate();
 void gameDraw();
+void setGameDifficulty(int difficulty);
+int  getGameDifficulty();
 
 #endif // !GAME_H_

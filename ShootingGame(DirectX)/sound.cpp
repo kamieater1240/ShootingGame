@@ -41,7 +41,8 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{"Assets/Sounds/PShot.wav", 0},				// プレイヤー弾発射音
 	{"Assets/Sounds/Eshot.wav", 0},				// エネミー弾発射音
 	{"Assets/Sounds/Explosion.wav", 0},			// 爆発音
-	{"Assets/Sounds/Choose.wav", 0},			// 選択音
+	{"Assets/Sounds/OK.wav", 0},				// OK音
+	{"Assets/Sounds/Select.wav", 0},			// 選択音
 	{"Assets/Sounds/Cancel.wav", 0},			// キャンセル音
 	{"Assets/Sounds/Death.wav", 0},				// 死亡音
 };

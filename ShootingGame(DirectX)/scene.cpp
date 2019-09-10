@@ -14,10 +14,10 @@ void SetScene(SCENE_STATE g_Scene) {
 	case(SCENE_NONE):
 		break;
 	case(SCENE_TITLE):
-		//UninitTitle();
+		titleUninit();
 		break;
 	case(SCENE_GAME):
-		//UninitGame();
+		gameUninit();
 		break;
 	case(SCENE_RESULT):
 		break;

@@ -19,7 +19,8 @@ typedef enum
 	SOUND_LABEL_SE_PSHOT,			// プレイヤー弾発射音
 	SOUND_LABEL_SE_ESHOT,			// エネミー弾発射音
 	SOUND_LABEL_SE_EXPLOSION,		// 爆発音
-	SOUND_LABEL_SE_CHOOSE,			// 選択音
+	SOUND_LABEL_SE_OK,				// OK音
+	SOUND_LABEL_SE_SELECT,			// 選択音
 	SOUND_LABEL_SE_CANCEL,			// キャンセル音
 	SOUND_LABEL_SE_DEATH,			// 死亡音
 	SOUND_LABEL_MAX,

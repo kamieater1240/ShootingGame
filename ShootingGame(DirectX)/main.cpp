@@ -7,6 +7,7 @@
 #include <time.h> 
 #include "main.h"
 #include "game.h"
+#include "title.h"
 #include "fade.h"
 #include "scene.h"
 #include "mydirect3d.h"
@@ -138,10 +139,19 @@ bool Init(HWND hWnd) {
 	InitSound(hWnd);
 	SystemTimer_Initialize();
 	SystemTimer_Start();
-	fadeInit();
 
-	Fade(SCENE_GAME);
-	//gameInit();
+	//Texture setting
+	Device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);	//可以控制polygon vertex的alpha值來讓texture變透明
+	Device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	Device->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+
+	//透明を設定できるセッティング
+	Device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	fadeInit();
+	Fade(SCENE_TITLE);
 
 	return true;
 }
@@ -160,7 +170,7 @@ void Update() {
 	switch (getSceneState())
 	{
 	case SCENE_TITLE:
-		//titleUpdate();
+		titleUpdate();
 		break;
 	case SCENE_GAME:
 		gameUpdate();
@@ -170,13 +180,12 @@ void Update() {
 	}
 
 	fadeUpdate();
-	//gameUpdate();
 }
 
 void Draw(void) {
 
 	//画面のクリア,           　　　　 クリアしたいターゲット　　　　　　　　　　色　　　　　　　　　　　　　Z　　ステンシル
-	Device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(135, 206, 235, 255), 1.0f, 0);
+	Device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
 
 	//ポリゴン描画 1.頂点構造体を作ります　2.デバイスに頂点の形を伝えるためのFVFを宣言する
 	//3.頂点データを作る　
@@ -187,7 +196,7 @@ void Draw(void) {
 	switch (getSceneState())
 	{
 	case SCENE_TITLE:
-		//titleDraw();
+		titleDraw();
 		break;
 	case SCENE_GAME:
 		gameDraw();
@@ -196,7 +205,7 @@ void Draw(void) {
 		break;
 	}
 
-	//gameDraw();
+	fadeDraw();
 
 	Device->EndScene();		//在Call下一個BeginScene之前一定要接EndScene
 	Device->Present(NULL, NULL, NULL, NULL);

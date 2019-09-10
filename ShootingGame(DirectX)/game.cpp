@@ -26,6 +26,7 @@ float g_FPS;					//FPS
 
 static int g_BG_textureID;
 static int g_gameBG_textureID;
+static int g_game_difficulty;
 float gameBG1Y, gameBG2Y;
 
 void gameInit() {
@@ -36,27 +37,17 @@ void gameInit() {
 	g_FPSBaseTime = SystemTimer_GetTime();
 	g_FPS = 0.0;
 
-	Texture_SetLoadFile("Assets/Textures/background1.png", SCREEN_WIDTH, SCREEN_HEIGHT);
+	Texture_SetLoadFile("Assets/Textures/background2.png", SCREEN_WIDTH, SCREEN_HEIGHT);
 	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
 	Texture_Load();
 
-	g_BG_textureID = Texture_GetID("Assets/Textures/background1.png");
+	g_BG_textureID = Texture_GetID("Assets/Textures/background2.png");
 	g_gameBG_textureID = Texture_GetID("Assets/Textures/gameBG.png");
 
 	gameBG1Y = SCREEN_HEIGHT / 2.f;
 	gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
 
 	LPDIRECT3DDEVICE9 myDevice = MyDirect3D_GetDevice();
-
-	//Texture setting
-	myDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);	//可以控制polygon vertex的alpha值來讓texture變透明
-	myDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	myDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-
-	//透明を設定できるセッティング
-	myDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	myDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	myDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	//==================================================================================================================//
 
 	playerInit();
@@ -120,4 +111,12 @@ void gameDraw() {
 
 	Sprite_Draw(g_BG_textureID, SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
 	scoreBoardDraw();
+}
+
+void setGameDifficulty(int difficulty) {
+	g_game_difficulty = difficulty;
+}
+
+int getGameDifficulty() {
+	return g_game_difficulty;
 }
