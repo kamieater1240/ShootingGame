@@ -3,6 +3,7 @@
 #include <d3dx9.h>
 #include "boss.h"
 #include "main.h"
+#include "game.h"
 #include "player.h"
 #include "sprite.h"
 #include "texture.h"
@@ -55,6 +56,9 @@ int prevBossHp;
 
 //Invincible flag
 bool bossInvincible;
+
+//Difficulty
+GAME_DIFFICULTY difficulty;
 //===================================//
 
 
@@ -104,6 +108,8 @@ void bossInit() {
 	prevBossHp = bossHp;
 
 	bossInvincible = false;
+
+	difficulty = getGameDifficulty();
 }
 
 void bossDraw() {
@@ -304,20 +310,42 @@ void bossShot() {
 						bossShots[index].pattern = 0;
 						bossShots[index].speed = 6;
 
-						if (num == 0)
-							bossShots[index].radian = trad - (20 * D3DX_PI / 180.f);
-						else if (num == 1)
-							bossShots[index].radian = trad - (10 * D3DX_PI / 180.f);
-						else if (num == 2)
-							bossShots[index].radian = trad;
-						else if (num == 3)
-							bossShots[index].radian = trad + (10 * D3DX_PI / 180.f);
-						else if (num == 4)
-							bossShots[index].radian = trad + (20 * D3DX_PI / 180.f);
+						if (difficulty == DIFFICULTY_EASY) {			//Easy Mode
+							if (num == 0)
+								bossShots[index].radian = trad - (20 * D3DX_PI / 180.f);
+							else if (num == 1)
+								bossShots[index].radian = trad - (10 * D3DX_PI / 180.f);
+							else if (num == 2)
+								bossShots[index].radian = trad;
+							else if (num == 3)
+								bossShots[index].radian = trad + (10 * D3DX_PI / 180.f);
+							else if (num == 4)
+								bossShots[index].radian = trad + (20 * D3DX_PI / 180.f);
 
-						num++;
-						if (num == 5)
-							break;
+							num++;
+							if (num == 5)
+								break;
+						}
+						else if (difficulty == DIFFICULTY_HARD) {	//Hard Mode
+							if (num == 0)
+								bossShots[index].radian = trad - (24 * D3DX_PI / 180.f);
+							else if (num == 1)
+								bossShots[index].radian = trad - (16 * D3DX_PI / 180.f);
+							else if (num == 2)
+								bossShots[index].radian = trad - (8 * D3DX_PI / 180.f);
+							else if (num == 3)
+								bossShots[index].radian = trad;
+							else if (num == 4)
+								bossShots[index].radian = trad + (8 * D3DX_PI / 180.f);
+							else if (num == 5)
+								bossShots[index].radian = trad + (16 * D3DX_PI / 180.f);
+							else if (num == 6)
+								bossShots[index].radian = trad + (24 * D3DX_PI / 180.f);
+
+							num++;
+							if (num == 7)
+								break;
+						}
 					}
 					//Play enemy shot SE
 					if (bossShotCount == 0)
@@ -325,7 +353,12 @@ void bossShot() {
 				}
 				break;
 			case 1:
-				if (bossShotCount % 8 == 0) {
+				int interval;
+				if (difficulty == DIFFICULTY_EASY)
+					interval = 20;
+				else if (DIFFICULTY_HARD)
+					interval = 10;
+				if (bossShotCount % interval == 0) {
 					trad = atan2(playerY - boss_position.y, playerX - boss_position.x);
 					while ((index = shotSearch()) != -1) {
 						bossShots[index].pattern = 1;

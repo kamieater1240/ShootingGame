@@ -5,5 +5,6 @@ void titleInit();
 void titleUninit();
 void titleUpdate();
 void titleDraw();
+bool getExitGameBool();
 
 #endif // !TITLE_H_

@@ -83,7 +83,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	//wMsgFilterMin：指定被检索的最小消息值的整数。
 	//wMsgFilterMax：指定被检索的最大消息值的整数。
 	MSG msg = {};
-	while (WM_QUIT != msg.message) {
+	while (WM_QUIT != msg.message && !getExitGameBool()) {
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -110,7 +110,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 	case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE) {
+		if (wParam == VK_BACK) {
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 		}
 		break;

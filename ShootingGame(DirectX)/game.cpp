@@ -26,7 +26,7 @@ float g_FPS;					//FPS
 
 static int g_BG_textureID;
 static int g_gameBG_textureID;
-static int g_game_difficulty;
+static GAME_DIFFICULTY g_game_difficulty;
 float gameBG1Y, gameBG2Y;
 
 void gameInit() {
@@ -37,11 +37,11 @@ void gameInit() {
 	g_FPSBaseTime = SystemTimer_GetTime();
 	g_FPS = 0.0;
 
-	Texture_SetLoadFile("Assets/Textures/background2.png", SCREEN_WIDTH, SCREEN_HEIGHT);
+	Texture_SetLoadFile("Assets/Textures/background1.png", SCREEN_WIDTH, SCREEN_HEIGHT);
 	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
 	Texture_Load();
 
-	g_BG_textureID = Texture_GetID("Assets/Textures/background2.png");
+	g_BG_textureID = Texture_GetID("Assets/Textures/background1.png");
 	g_gameBG_textureID = Texture_GetID("Assets/Textures/gameBG.png");
 
 	gameBG1Y = SCREEN_HEIGHT / 2.f;
@@ -113,10 +113,10 @@ void gameDraw() {
 	scoreBoardDraw();
 }
 
-void setGameDifficulty(int difficulty) {
+void setGameDifficulty(GAME_DIFFICULTY difficulty) {
 	g_game_difficulty = difficulty;
 }
 
-int getGameDifficulty() {
+GAME_DIFFICULTY getGameDifficulty() {
 	return g_game_difficulty;
 }

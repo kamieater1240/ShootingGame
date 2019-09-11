@@ -21,6 +21,9 @@ static int hardTexID, hardGlowTexID;
 bool inMenu, difficultyChoose;
 int  selected;
 
+//Exit game bool
+bool exitGame;
+
 void titleInit() {
 	Texture_SetLoadFile("Assets/Textures/title.png", 1280, 900);
 	Texture_SetLoadFile("Assets/Textures/start.png", 452, 142);
@@ -45,6 +48,7 @@ void titleInit() {
 	inMenu = true;
 	difficultyChoose = false;
 	selected = 0;
+	exitGame = false;
 
 	PlaySound(SOUND_LABEL_TITLEBGM);
 }
@@ -77,21 +81,28 @@ void titleUpdate() {
 				difficultyChoose = true;
 			}
 			else if (selected == 1) {			//Exit the game
-
+				exitGame = true;
 			}
 		}
 		else if (difficultyChoose) {
 			if (selected == 0) {				//Easy Mode
-				setGameDifficulty(10);
+				setGameDifficulty(DIFFICULTY_EASY);
 			}
 			else if (selected == 1) {			//Hard Mode
-				setGameDifficulty(100);
+				setGameDifficulty(DIFFICULTY_HARD);
 			}
 			Fade(SCENE_GAME);
 		}
 	}
 	if (Keyboard_IsTrigger(DIK_ESCAPE)) {		//Press ESC
-
+		if (selected != 1) {					//Change the selection to exit 
+			selected = 1;
+			PlaySound(SOUND_LABEL_SE_SELECT);
+		}
+		else {									//Exit the game
+			exitGame = true;
+			PlaySound(SOUND_LABEL_SE_OK);
+		}
 	}
 }
 
@@ -118,4 +129,8 @@ void titleDraw() {
 			Sprite_Draw(hardGlowTexID, 1050.f, 700.f);
 		}
 	}
+}
+
+bool getExitGameBool() {
+	return exitGame;
 }
