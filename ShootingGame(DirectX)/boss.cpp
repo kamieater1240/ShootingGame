@@ -57,6 +57,9 @@ int prevBossHp;
 //Invincible flag
 bool bossInvincible;
 
+//Appear flag
+bool bossAppears;
+
 //Difficulty
 GAME_DIFFICULTY difficulty;
 //===================================//
@@ -108,6 +111,8 @@ void bossInit() {
 	prevBossHp = bossHp;
 
 	bossInvincible = false;
+
+	bossAppears = false;
 
 	difficulty = getGameDifficulty();
 }
@@ -374,15 +379,20 @@ void bossShot() {
 				}
 				break;
 			case 2:
+				int tamaNum;
+				if (difficulty == DIFFICULTY_EASY)
+					tamaNum = 10;
+				else if (DIFFICULTY_HARD)
+					tamaNum = 20;
 				if (bossShotCount % 30 == 0) {
 					trad = atan2(playerY - boss_position.y, playerX - boss_position.x);
 					while ((index = shotSearch()) != -1) {
 						bossShots[index].pattern = 2;
 						bossShots[index].speed = 2;
-						bossShots[index].radian = trad + num * ((360 / 20) * D3DX_PI / 180.f);
+						bossShots[index].radian = trad + num * ((360 / tamaNum) * D3DX_PI / 180.f);
 
 						num++;
-						if (num == 20)
+						if (num == tamaNum)
 							break;
 					}
 					//Play enemy shot SE
@@ -434,18 +444,6 @@ void bossShot() {
 	}
 }
 
-void bossShotPattern1() {
-
-}
-
-void bossShotPattern2() {
-
-}
-
-void bossShotPattern3() {
-
-}
-
 void setBossShotPattern(int pattern) {
 	prev_shot_pattern = shot_pattern;
 	shot_pattern = pattern;
@@ -487,6 +485,14 @@ bool getBossFlag() {
 
 bool getBossInvincibleFlag() {
 	return bossInvincible;
+}
+
+void setBossAppearFlag(bool flag) {
+	bossAppears = flag;
+}
+
+bool getBossAppearFlag() {
+	return bossAppears;
 }
 
 void getBossPosition(float* x, float *y) {

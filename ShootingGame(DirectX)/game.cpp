@@ -33,6 +33,8 @@ void gameInit() {
 	//==============================================System Initialization===============================================//
 	DebugFont_Initialize();
 
+	LPDIRECT3DDEVICE9 myDevice = MyDirect3D_GetDevice();
+
 	g_FrameCount = g_FPSBaseFrameCount = 0;
 	g_FPSBaseTime = SystemTimer_GetTime();
 	g_FPS = 0.0;
@@ -46,8 +48,6 @@ void gameInit() {
 
 	gameBG1Y = SCREEN_HEIGHT / 2.f;
 	gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
-
-	LPDIRECT3DDEVICE9 myDevice = MyDirect3D_GetDevice();
 	//==================================================================================================================//
 
 	playerInit();
@@ -58,7 +58,7 @@ void gameInit() {
 	pDeadEffectInit();
 	explosionInit();
 
-	PlaySound(SOUND_LABEL_BOSSBGM);
+	PlaySound(SOUND_LABEL_STAGEBGM);
 }
 
 void gameUninit() {
@@ -84,16 +84,20 @@ void gameUpdate() {
 	if (gameBG2Y >= (SCREEN_HEIGHT / 2.f) + Texture_GetWidth(g_gameBG_textureID))
 		gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
 
+	itemUpdate();
 	playerUpdate();
 	enemyUpdate();
-	bossMove();
-	itemUpdate();
-	checkCollisionAll();
-	checkBossCollision();
+
+	if (getBossAppearFlag())
+		bossMove();
+
 	if (pDeadEffectGetFlag())
 		pDeadEffectUpdate();
+
 	explosionUpdate();
 
+	checkCollisionAll();
+	checkBossCollision();
 }
 
 void gameDraw() {
@@ -104,12 +108,17 @@ void gameDraw() {
 	itemDraw();
 	playerDraw();
 	enemyDraw();
-	bossDraw();
+
+	if (getBossAppearFlag())
+		bossDraw();
+
 	if (pDeadEffectGetFlag())
 		pDeadEffectDraw();
+
 	explosionDraw();
 
 	Sprite_Draw(g_BG_textureID, SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
+
 	scoreBoardDraw();
 }
 

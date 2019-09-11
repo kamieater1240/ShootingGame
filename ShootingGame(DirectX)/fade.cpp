@@ -25,7 +25,7 @@ void fadeUpdate() {
 			SetScene(g_FadeNextScene);
 		}
 
-		g_FadeAlpha += 1.0 / 100.0f;
+		g_FadeAlpha += 1.0 / 50.0f;
 	}
 	else if (g_FadeState == FADE_STATE_IN) {
 		if (g_FadeAlpha <= 0.0f) {
@@ -33,7 +33,7 @@ void fadeUpdate() {
 			g_FadeState = FADE_STATE_NONE;
 		}
 
-		g_FadeAlpha -= 1.0f / 100.0f;
+		g_FadeAlpha -= 1.0f / 50.0f;
 	}
 
 	D3DXCOLOR color = g_FadeColor;

@@ -415,7 +415,7 @@ int searchNearbyEnemy() {
 	float nearResult = 100000.f;
 	float eX, eY, tX, tY, bX, bY;
 
-	/*for (int i = 0; i < ENEMY_NUM; i++) {
+	for (int i = 0; i < ENEMY_NUM; i++) {
 		if (!getEnemyPositions(i, &eX, &eY))
 			continue;
 
@@ -432,9 +432,9 @@ int searchNearbyEnemy() {
 			nearEnemyIndex = i;
 			nearResult = tX * tX + tY * tY;
 		}
-	}*/
+	}
 
-	if (getBossFlag()) {
+	if (getBossFlag() && getBossAppearFlag()) {
 		getBossPosition(&bX, &bY);
 		tX = bX - g_player_position.x;
 		tY = bY - g_player_position.y;

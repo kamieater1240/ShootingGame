@@ -38,19 +38,24 @@ void checkCollisionAll() {
 					enemyObj.radius = ENEMY_COLLISIONRAD;
 
 					if (circleCollsion(&pBullet, &enemyObj)) {
-						//if enemy was hit, set deadFlag to true
-						setEnemyDeadFlag(j);
+						//Decrease enemy's hp
+						setEnemyHp(j, -1);
 						//set the bullet that hit the enemy to false
 						setPlayerShotFlag(i, false);
-						//play enemy destroy sound effect
-						PlaySound(SOUND_LABEL_SE_EXPLOSION);
-						//get points
-						setScoreData(CURRENT_SCORE, 100);
-						//item appears
-						for (int k = 0; k < ITEM_NUM; k++) {
-							if (!getItemFlag(k)) {
-								setItemFlag(k, ePositionX, ePositionY, getEnemyItemType(j));
-								break;
+						//If enemy's hp comes to 0
+						if (getEnemyHP(j) == 0) {
+							//set deadFlag to true
+							setEnemyDeadFlag(j);
+							//play enemy destroy sound effect
+							PlaySound(SOUND_LABEL_SE_EXPLOSION);
+							//get points
+							setScoreData(CURRENT_SCORE, 100);
+							//item appears
+							for (int k = 0; k < ITEM_NUM; k++) {
+								if (!getItemFlag(k)) {
+									setItemFlag(k, ePositionX, ePositionY, getEnemyItemType(j));
+									break;
+								}
 							}
 						}
 					}
@@ -155,7 +160,7 @@ void checkBossCollision() {
 	//boss's collision between player's bullets
 	for (int i = 0; i < PSHOT_NUM; i++) {
 		if (getPlayerShotPosition(i, &pBulletPositionX, &pBulletPositionY)) {
-			if (getBossFlag()) {
+			if (getBossFlag() && !getBossInvincibleFlag()) {
 				getBossPosition(&bPositionX, &bPositionY);
 				Circle pBullet, bossObj;
 				pBullet.position.x = pBulletPositionX;

@@ -189,17 +189,29 @@ void enemyMove() {
 			case 2:	//move straight down and right a little
 				if (enemy[i].in_time < g_FrameCount) {
 					enemy[i].enemy_position.y += 2.f;
-					if (g_FrameCount % 5 == 0) {
+					enemy[i].enemy_position.x += 2.f;
+					/*if (g_FrameCount % 5 == 0) {
 						enemy[i].enemy_position.x += 2.f;
-					}
+					}*/
 				}
 				break;
 			case 3: //move straight down and left a little
 				if (enemy[i].in_time < g_FrameCount) {
 					enemy[i].enemy_position.y += 2.f;
-					if (g_FrameCount % 5 == 0) {
+					enemy[i].enemy_position.x -= 2.f;
+					/*if (g_FrameCount % 5 == 0) {
 						enemy[i].enemy_position.x -= 2.f;
-					}
+					}*/
+				}
+				break;
+			case 4: //move right
+				if (enemy[i].in_time < g_FrameCount) {
+					enemy[i].enemy_position.x += 2.f;
+				}
+				break;
+			case 5: //move left
+				if (enemy[i].in_time < g_FrameCount) {
+					enemy[i].enemy_position.x -= 2.f;
 				}
 				break;
 			default: break;
@@ -230,13 +242,13 @@ void enemyShot() {
 				float playerX, playerY;
 				getPlayerPosition(&playerX, &playerY);
 
-				//Calculate the radian with the player
-				if (enemy[i].sCount == 0)
-					enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
-
 				switch (enemy[i].shot_pattern) {
 				case 0: //Shoot straight
-					if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 80) {
+					if (enemy[i].sCount % 40 == 0 && enemy[i].sCount <= 160) {
+						//Calculate the radian with the player
+						if (enemy[i].sCount == 0)
+							enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
+
 						for (int j = 0; j < ENEMY_SNUM; j++) {
 							if (!enemy[i].shot[j].flag) {
 								enemy[i].shot[j].flag = true;
@@ -246,10 +258,15 @@ void enemyShot() {
 								break;
 							}
 						}
+
+						if (enemy[i].sCount == 160)
+							enemy[i].sCount = 0;
 					}
 					break;
 				case 1: //Shoot straight at the player
 					if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 180) {
+						enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
+
 						for (int j = 0; j < ENEMY_SNUM; j++) {
 							if (!enemy[i].shot[j].flag) {
 								enemy[i].shot[j].flag = true;
@@ -263,6 +280,10 @@ void enemyShot() {
 					break;
 				case 2: //Shoot 3 straight bullets
 					if (enemy[i].sCount % 30 == 0 && enemy[i].sCount <= 120) {
+						//Calculate the radian with the player
+						if (enemy[i].sCount == 0)
+							enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
+
 						for (int j = 0; j < ENEMY_SNUM; j++) {
 							if (!enemy[i].shot[j].flag) {
 								enemy[i].shot[j].flag = true;
@@ -288,6 +309,10 @@ void enemyShot() {
 					break;
 				case 3: //Shoot randomly
 					if (enemy[i].sCount % 10 == 0) {
+						//Calculate the radian with the player
+						if (enemy[i].sCount == 0)
+							enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
+
 						//Shoot 1 bullet each loop
 						for (int j = 0; j < ENEMY_SNUM; j++) {
 							if (!enemy[i].shot[j].flag) {
@@ -351,7 +376,7 @@ void enemyShot() {
 }
 
 bool checkOutOfRange(ENEMY enemy) {
-	if (enemy.enemy_position.x < 50 || enemy.enemy_position.x > 850 || enemy.enemy_position.y < -10 || enemy.enemy_position.y > 900)
+	if (enemy.enemy_position.x < -50 || enemy.enemy_position.x > 950 || enemy.enemy_position.y < -100 || enemy.enemy_position.y > 900)
 		return true;
 	else
 		return false;
@@ -418,4 +443,12 @@ int  getEnemyInTime(int index) {
 
 int  getEnemyItemType(int index) {
 	return enemy[index].item;
+}
+
+void setEnemyHp(int index, int num) {
+	enemy[index].hp += num;
+}
+
+int  getEnemyHP(int index) {
+	return enemy[index].hp;
 }
