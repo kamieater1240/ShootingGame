@@ -361,7 +361,7 @@ void bossShot() {
 				int interval;
 				if (difficulty == DIFFICULTY_EASY)
 					interval = 20;
-				else if (DIFFICULTY_HARD)
+				else if (difficulty == DIFFICULTY_HARD)
 					interval = 10;
 				if (bossShotCount % interval == 0) {
 					trad = atan2(playerY - boss_position.y, playerX - boss_position.x);
@@ -382,7 +382,7 @@ void bossShot() {
 				int tamaNum;
 				if (difficulty == DIFFICULTY_EASY)
 					tamaNum = 10;
-				else if (DIFFICULTY_HARD)
+				else if (difficulty == DIFFICULTY_HARD)
 					tamaNum = 20;
 				if (bossShotCount % 30 == 0) {
 					trad = atan2(playerY - boss_position.y, playerX - boss_position.x);

@@ -151,7 +151,7 @@ bool Init(HWND hWnd) {
 	Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 	fadeInit();
-	Fade(SCENE_GAME);
+	Fade(SCENE_TITLE);
 
 	return true;
 }
