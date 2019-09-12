@@ -60,10 +60,10 @@ void playerInit() {
 
 	move = 1.f;
 	shootingCD = 1.f;
-	power = 10;
+	power = 6;
 	tamaInit();
 
-	life = 5;
+	life = 3;
 	damageFlag = false;
 	endFlag = false;
 	damageCounter = 0;
@@ -141,39 +141,41 @@ void playerDraw() {
 	}
 
 	//Draw Player
-	if (damageFlag) {	//Get Damage Phase
-		if (damageCounter == 0) //Set the player a little below the initial position
-			g_player_position = D3DXVECTOR2(PLAYER_INITX, PLAYER_INITY + 158);
-		if (damageCounter > 20) {
-			if (damageCounter % 4 == 0)
-				Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100, 140);
+	if (life > 0) {
+		if (damageFlag) {	//Get Damage Phase
+			if (damageCounter == 0) //Set the player a little below the initial position
+				g_player_position = D3DXVECTOR2(PLAYER_INITX, PLAYER_INITY + 158);
+			if (damageCounter > 20) {
+				if (damageCounter % 4 == 0)
+					Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100, 140);
+			}
 		}
-	}
-	else if (isInvincible) {	//Invincible Phase
-		if (invincibleCount >= 0) {
-			if (invincibleCount % 4 == 0)
-				Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100, 140);
+		else if (isInvincible) {	//Invincible Phase
+			if (invincibleCount >= 0) {
+				if (invincibleCount % 4 == 0)
+					Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100, 140);
+			}
 		}
-	}
-	else {				//Normal Phase
-		if (!isMovingLeft && !isMovingRight)
-			Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100);
-		else if (isMovingLeft)
-			Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 100, 100, 100);
-		else if (isMovingRight)
-			Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 200, 100, 100);
-		if (isMovingSlow)
-			Sprite_Draw(g_player_centerTexID, g_player_position.x, g_player_position.y, 0, 0, 20, 20);
-	}
+		else {				//Normal Phase
+			if (!isMovingLeft && !isMovingRight)
+				Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 0, 100, 100);
+			else if (isMovingLeft)
+				Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 100, 100, 100);
+			else if (isMovingRight)
+				Sprite_Draw(g_player_textureID, g_player_position.x, g_player_position.y, 0, 200, 100, 100);
+			if (isMovingSlow)
+				Sprite_Draw(g_player_centerTexID, g_player_position.x, g_player_position.y, 0, 0, 20, 20);
+		}
 
-	//陰陽玉
-	showTama();
+		//陰陽玉
+		showTama();
+	}
 
 	DebugFont_Draw(32, 32, "x = %.2f, y = %.2f", g_player_position.x, g_player_position.y);
 }
 
 void playerMove() {
-	if (!damageFlag) {
+	if (!damageFlag && life > 0) {
 		isMovingLeft = false;
 		isMovingRight = false;
 
@@ -394,10 +396,12 @@ bool checkShotOutOfRange(int index) {
 		return false;
 }
 
-void upgradePlayerPower(int p) {
+void setPlayerPower(int p) {
 	power += p;
 	if (power > 10)
 		power = 10;
+	else if (power < 1)
+		power = 1;
 }
 
 int  getPlayerPower() {

@@ -30,7 +30,7 @@ bool getPlayerInvincibleFlag();
 int  getPlayerLife();
 void setPlayerLife();
 bool checkShotOutOfRange(int index);
-void upgradePlayerPower(int p);
+void setPlayerPower(int p);
 int  getPlayerPower();
 void showTama();
 int  searchNearbyEnemy();

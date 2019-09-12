@@ -44,7 +44,9 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{"Assets/Sounds/OK.wav", 0},				// OK‰¹
 	{"Assets/Sounds/Select.wav", 0},			// ‘I‘ð‰¹
 	{"Assets/Sounds/Cancel.wav", 0},			// ƒLƒƒƒ“ƒZƒ‹‰¹
+	{"Assets/Sounds/GetItem.wav", 0},			// Get Item
 	{"Assets/Sounds/Death.wav", 0},				// Ž€–S‰¹
+	{"Assets/Sounds/BossDead.wav", 0},			// Boss Ž€–S‰¹
 };
 
 //=============================================================================

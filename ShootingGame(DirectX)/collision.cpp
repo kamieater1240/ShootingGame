@@ -97,6 +97,8 @@ void checkCollisionAll() {
 					if (circleCollsion(&eBullet, &playerObj)) {
 						//if the player was hit, set player's damage flag to true
 						setPlayerDamageFlag();
+						//player lose some of the power
+						setPlayerPower(-2);
 						//set the bullet that hit the player to false
 						setEnemyShotFlag(i, j, false);
 						//play player destroy sound effect
@@ -123,7 +125,7 @@ void checkCollisionAll() {
 				if (circleCollsion(&playerObj, &itemObj)) {
 					switch (getItemType(i)) {
 					case 0:			//Get power
-						upgradePlayerPower(1);
+						setPlayerPower(1);
 						break;
 					case 1:			//Get point
 						setScoreData(CURRENT_SCORE, 256);
@@ -134,6 +136,7 @@ void checkCollisionAll() {
 					default: break;
 					}
 
+					PlaySound(SOUND_LABEL_SE_GETITEM);
 					DestroyItem(i);
 				}
 			}
@@ -243,9 +246,7 @@ void checkBossCollision() {
 							}
 						}
 						//Play explosion SE
-						PlaySound(SOUND_LABEL_SE_EXPLOSION);
-						//Stop Boss BGM
-						StopSound(SOUND_LABEL_BOSSBGM);
+						PlaySound(SOUND_LABEL_SE_BOSSDEATH);
 					}
 				}
 			}
@@ -283,6 +284,8 @@ void checkBossCollision() {
 				if (circleCollsion(&bBullet, &playerObj)) {
 					//if the player was hit, set player's damage flag to true
 					setPlayerDamageFlag();
+					//player lose some of the power
+					setPlayerPower(-2);
 					//set the bullet that hit the player to false
 					setBossShotFlag(i, false);
 					//play player destroy sound effect
@@ -309,7 +312,7 @@ void checkBossCollision() {
 				if (circleCollsion(&playerObj, &itemObj)) {
 					switch (getItemType(i)) {
 					case 0:			//Get power
-						upgradePlayerPower(1);
+						setPlayerPower(1);
 						break;
 					case 1:			//Get point
 						setScoreData(CURRENT_SCORE, 256);
@@ -320,6 +323,7 @@ void checkBossCollision() {
 					default: break;
 					}
 
+					PlaySound(SOUND_LABEL_SE_GETITEM);
 					DestroyItem(i);
 				}
 			}

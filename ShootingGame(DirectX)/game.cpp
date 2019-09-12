@@ -27,9 +27,12 @@ float g_FPS;					//FPS
 
 static int g_BG_textureID;
 static int g_gameBG_textureID;
+static int easyGlowTexID, hardGlowTexID;
+
 static GAME_DIFFICULTY g_game_difficulty;
 float gameBG1Y, gameBG2Y;
 int beforeBossCounter, afterBossCounter;
+bool kamokuRyunen;
 
 void gameInit() {
 	//==============================================System Initialization===============================================//
@@ -41,18 +44,23 @@ void gameInit() {
 	g_FPSBaseTime = SystemTimer_GetTime();
 	g_FPS = 0.0;
 
-	Texture_SetLoadFile("Assets/Textures/background1.png", SCREEN_WIDTH, SCREEN_HEIGHT);
+	Texture_SetLoadFile("Assets/Textures/background2.png", SCREEN_WIDTH, SCREEN_HEIGHT);
 	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
+	Texture_SetLoadFile("Assets/Textures/easy_glow.png", 470, 162);
+	Texture_SetLoadFile("Assets/Textures/hard_glow.png", 470, 162);
 	Texture_Load();
-
-	g_BG_textureID = Texture_GetID("Assets/Textures/background1.png");
+	g_BG_textureID = Texture_GetID("Assets/Textures/background2.png");
 	g_gameBG_textureID = Texture_GetID("Assets/Textures/gameBG.png");
+	easyGlowTexID = Texture_GetID("Assets/Textures/easy_glow.png");
+	hardGlowTexID = Texture_GetID("Assets/Textures/hard_glow.png");
 
 	gameBG1Y = SCREEN_HEIGHT / 2.f;
 	gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
 
 	beforeBossCounter = 0;
 	afterBossCounter = 0;
+
+	kamokuRyunen = false;
 	//==================================================================================================================//
 
 	playerInit();
@@ -67,7 +75,12 @@ void gameInit() {
 }
 
 void gameUninit() {
-
+	if (kamokuRyunen && !getBossAppearFlag())
+		StopSound(SOUND_LABEL_STAGEBGM);
+	else if(kamokuRyunen && getBossAppearFlag())
+		StopSound(SOUND_LABEL_BOSSBGM);
+	else if(!kamokuRyunen)
+		StopSound(SOUND_LABEL_BOSSBGM);
 }
 
 void gameUpdate() {
@@ -92,6 +105,7 @@ void gameUpdate() {
 	itemUpdate();
 	playerUpdate();
 	enemyUpdate();
+	scoreBoardUpdate();
 
 	if (getBossAppearFlag())
 		bossMove();
@@ -109,13 +123,26 @@ void gameUpdate() {
 	}
 	if (beforeBossCounter == 200) {
 		setBossAppearFlag(true);
+		StopSound(SOUND_LABEL_STAGEBGM);
+		PlaySound(SOUND_LABEL_BOSSBGM);
 	}
 
+	//Clear the Stage
 	if (!getBossFlag()) {
 		afterBossCounter++;
+
+		if (afterBossCounter == 200) {
+			Fade(SCENE_RESULT);
+		}
 	}
-	if (afterBossCounter == 200) {
-		Fade(SCENE_RESULT);
+	//Lost all the lives
+	if (getPlayerLife() == 0) {
+		afterBossCounter++;
+
+		if (afterBossCounter == 200) {
+			kamokuRyunen = true;
+			Fade(SCENE_RESULT);
+		}
 	}
 }
 
@@ -139,6 +166,13 @@ void gameDraw() {
 	Sprite_Draw(g_BG_textureID, SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
 
 	scoreBoardDraw();
+
+	if (g_game_difficulty == DIFFICULTY_EASY) {
+		Sprite_Draw(easyGlowTexID, 1050, 40, 0.3f, 0.3f);
+	}
+	else if (g_game_difficulty == DIFFICULTY_HARD) {
+		Sprite_Draw(hardGlowTexID, 1050, 40, 0.3f, 0.3f);
+	}
 }
 
 void setGameDifficulty(GAME_DIFFICULTY difficulty) {
@@ -147,4 +181,8 @@ void setGameDifficulty(GAME_DIFFICULTY difficulty) {
 
 GAME_DIFFICULTY getGameDifficulty() {
 	return g_game_difficulty;
+}
+
+bool RyunenOrNot() {
+	return kamokuRyunen;
 }

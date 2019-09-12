@@ -95,13 +95,21 @@ void titleUpdate() {
 		}
 	}
 	if (Keyboard_IsTrigger(DIK_ESCAPE)) {		//Press ESC
-		if (selected != 1) {					//Change the selection to exit 
-			selected = 1;
-			PlaySound(SOUND_LABEL_SE_SELECT);
+		if (inMenu) {
+			if (selected != 1) {					//Change the selection to exit 
+				selected = 1;
+				PlaySound(SOUND_LABEL_SE_CANCEL);
+			}
+			else {									//Exit the game
+				exitGame = true;
+				PlaySound(SOUND_LABEL_SE_CANCEL);
+				Sleep(1000);
+			}
 		}
-		else {									//Exit the game
-			exitGame = true;
-			PlaySound(SOUND_LABEL_SE_OK);
+		else if (difficultyChoose) {
+			difficultyChoose = false;
+			inMenu = true;
+			PlaySound(SOUND_LABEL_SE_CANCEL);
 		}
 	}
 }

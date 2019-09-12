@@ -22,7 +22,9 @@ typedef enum
 	SOUND_LABEL_SE_OK,				// OK‰¹
 	SOUND_LABEL_SE_SELECT,			// ‘I‘ð‰¹
 	SOUND_LABEL_SE_CANCEL,			// ƒLƒƒƒ“ƒZƒ‹‰¹
+	SOUND_LABEL_SE_GETITEM,			// Get Item
 	SOUND_LABEL_SE_DEATH,			// Ž€–S‰¹
+	SOUND_LABEL_SE_BOSSDEATH,		// Boss Ž€–S‰¹
 	SOUND_LABEL_MAX,
 } SOUND_LABEL;
 

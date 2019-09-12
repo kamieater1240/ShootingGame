@@ -14,5 +14,6 @@ void gameUpdate();
 void gameDraw();
 void setGameDifficulty(GAME_DIFFICULTY difficulty);
 GAME_DIFFICULTY getGameDifficulty();
+bool RyunenOrNot();
 
 #endif // !GAME_H_

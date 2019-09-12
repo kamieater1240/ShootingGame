@@ -1,7 +1,7 @@
 #ifndef BOSS_H_
 #define BOSS_H_
 
-#define BOSS_HP 3000
+#define BOSS_HP 1000
 
 void bossInit();
 void bossDraw();

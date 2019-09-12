@@ -8,6 +8,7 @@
 #include "main.h"
 #include "game.h"
 #include "title.h"
+#include "result.h"
 #include "fade.h"
 #include "scene.h"
 #include "mydirect3d.h"
@@ -150,6 +151,7 @@ bool Init(HWND hWnd) {
 	Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
+	sceneInit();
 	fadeInit();
 	Fade(SCENE_TITLE);
 
@@ -174,6 +176,9 @@ void Update() {
 		break;
 	case SCENE_GAME:
 		gameUpdate();
+		break;
+	case SCENE_RESULT:
+		resultUpdate();
 		break;
 	default:
 		break;
@@ -200,6 +205,9 @@ void Draw(void) {
 		break;
 	case SCENE_GAME:
 		gameDraw();
+		break;
+	case SCENE_RESULT:
+		resultDraw();
 		break;
 	default:
 		break;

@@ -1,11 +1,15 @@
 #include "scene.h"
 #include "title.h"
+#include "result.h"
 #include "game.h"
+#include "scoreboard.h"
 
 SCENE_STATE Scene_Now;
+int g_HighScore;
 
 void sceneInit() {
 	Scene_Now = SCENE_NONE;
+	g_HighScore = 0;
 }
 
 void SetScene(SCENE_STATE g_Scene) {
@@ -17,9 +21,11 @@ void SetScene(SCENE_STATE g_Scene) {
 		titleUninit();
 		break;
 	case(SCENE_GAME):
+		g_HighScore = getHighScore();
 		gameUninit();
 		break;
 	case(SCENE_RESULT):
+		resultUninit();
 		break;
 	}
 
@@ -33,9 +39,11 @@ void SetScene(SCENE_STATE g_Scene) {
 		titleInit();
 		break;
 	case(SCENE_GAME):
+		setHighScore(g_HighScore);
 		gameInit();
 		break;
 	case(SCENE_RESULT):
+		resultInit();
 		break;
 	}
 }
