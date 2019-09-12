@@ -17,8 +17,8 @@ static int g_enemy_textureID;
 static int g_enemyShot_textureID;
 
 ENEMY enemy[ENEMY_NUM];
-//ENEMY enemy;
 ENEMYDATA data[ENEMY_NUM];
+int enemyLeft;
 
 void enemyInit() {
 	Texture_SetLoadFile("Assets/Textures/enemy.png", 512, 512);
@@ -29,6 +29,8 @@ void enemyInit() {
 
 	//Read enemy data from file
 	readENEMYDATA();
+
+	enemyLeft = ENEMY_NUM;
 }
 
 void readENEMYDATA() {
@@ -214,6 +216,26 @@ void enemyMove() {
 					enemy[i].enemy_position.x -= 2.f;
 				}
 				break;
+			case 6:	//move right, stop, and then go back
+				//出てきてから止まる時間までの間なら下に移動
+				if (enemy[i].in_time < g_FrameCount && g_FrameCount < enemy[i].stop_time) {
+					enemy[i].enemy_position.x += 2.f;
+				}
+				//帰還時間を過ぎたら戻る。
+				else if (g_FrameCount > enemy[i].out_time) {
+					enemy[i].enemy_position.x -= 2.f;
+				}
+				break;
+			case 7:	//move left, stop, and then go back
+				//出てきてから止まる時間までの間なら下に移動
+				if (enemy[i].in_time < g_FrameCount && g_FrameCount < enemy[i].stop_time) {
+					enemy[i].enemy_position.x -= 2.f;
+				}
+				//帰還時間を過ぎたら戻る。
+				else if (g_FrameCount > enemy[i].out_time) {
+					enemy[i].enemy_position.x += 2.f;
+				}
+				break;
 			default: break;
 			}
 
@@ -221,6 +243,7 @@ void enemyMove() {
 			if (enemy[i].stop_time < g_FrameCount) {
 				if (checkOutOfRange(enemy[i])) {
 					enemy[i].deadFlag = true;
+					setEnemyLeft(1);
 				}
 			}
 		}
@@ -263,7 +286,7 @@ void enemyShot() {
 							enemy[i].sCount = 0;
 					}
 					break;
-				case 1: //Shoot straight at the player
+				case 1: //Each bullet will shoot straight at the player's direction, calculate every time when shooting bullet
 					if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 180) {
 						enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
 
@@ -325,6 +348,23 @@ void enemyShot() {
 						}
 					}
 					break;
+				case 4: //Shoot several bullets each time at player's direction, calculate the direction befor shooting once 
+					if (enemy[i].sCount % 20 == 0 && enemy[i].sCount <= 180) {
+						//Calculate the radian with the player
+						if (enemy[i].sCount == 0)
+							enemy[i].shootingRadian = atan2(playerY - enemy[i].enemy_position.y, playerX - enemy[i].enemy_position.x);
+
+						for (int j = 0; j < ENEMY_SNUM; j++) {
+							if (!enemy[i].shot[j].flag) {
+								enemy[i].shot[j].flag = true;
+								enemy[i].shot[j].x = enemy[i].enemy_position.x;
+								enemy[i].shot[j].y = enemy[i].enemy_position.y;
+								enemy[i].shot[j].radian = enemy[i].shootingRadian;
+								break;
+							}
+						}
+					}
+					break;
 				default: break;
 				}
 			}
@@ -351,9 +391,12 @@ void enemyShot() {
 						enemy[i].shot[j].x += enemy[i].shot[j].speed * cos(enemy[i].shot[j].radian);
 						enemy[i].shot[j].y += enemy[i].shot[j].speed * sin(enemy[i].shot[j].radian);
 						break;
+					case 4:
+						enemy[i].shot[j].x += enemy[i].shot[j].speed * cos(enemy[i].shot[j].radian);
+						enemy[i].shot[j].y += enemy[i].shot[j].speed * sin(enemy[i].shot[j].radian);
+						break;
 					default: break;
 					}
-
 
 					//弾の境界判定
 					if (checkEnemyShotOutOfRange(enemy[i], j)) {
@@ -451,4 +494,12 @@ void setEnemyHp(int index, int num) {
 
 int  getEnemyHP(int index) {
 	return enemy[index].hp;
+}
+
+int  getEnemyLeft() {
+	return enemyLeft;
+}
+
+void setEnemyLeft(int num) {
+	enemyLeft -= num;
 }

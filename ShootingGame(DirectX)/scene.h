@@ -6,7 +6,6 @@ enum SCENE_STATE {
 	SCENE_TITLE,
 	SCENE_GAME,
 	SCENE_RESULT,
-	SCENE_END
 };
 
 void sceneInit();

@@ -3,7 +3,7 @@
 
 #define PLAYER_WIDTH	100
 #define PLAYER_HEIGHT	100
-#define PLAYER_DEFAULT_SPEED 5.0f
+#define PLAYER_DEFAULT_SPEED 9.0f
 
 struct SHOT {
 	bool flag;				//’e‚ª”­ŽË’†‚©‚Ç‚¤‚©

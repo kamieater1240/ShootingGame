@@ -3,20 +3,21 @@
 #include <d3dx9.h>
 #include "game.h"
 #include "main.h"
-#include "mydirect3d.h"
-#include "system_timer.h"
-#include "explosion.h"
-#include "input.h"
-#include "sprite.h"
-#include "texture.h"
 #include "player.h"
 #include "enemy.h"
 #include "item.h"
 #include "boss.h"
+#include "fade.h"
 #include "collision.h"
+#include "explosion.h"
 #include "scoreboard.h"
 #include "effectpdead.h"
+#include "mydirect3d.h"
+#include "sprite.h"
+#include "texture.h"
+#include "input.h"
 #include "sound.h"
+#include "system_timer.h"
 #include "debug_font.h"
 
 int g_FrameCount;				//フレームカウンター
@@ -28,6 +29,7 @@ static int g_BG_textureID;
 static int g_gameBG_textureID;
 static GAME_DIFFICULTY g_game_difficulty;
 float gameBG1Y, gameBG2Y;
+int beforeBossCounter, afterBossCounter;
 
 void gameInit() {
 	//==============================================System Initialization===============================================//
@@ -48,6 +50,9 @@ void gameInit() {
 
 	gameBG1Y = SCREEN_HEIGHT / 2.f;
 	gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
+
+	beforeBossCounter = 0;
+	afterBossCounter = 0;
 	//==================================================================================================================//
 
 	playerInit();
@@ -98,6 +103,20 @@ void gameUpdate() {
 
 	checkCollisionAll();
 	checkBossCollision();
+
+	if (getEnemyLeft() == 0) {
+		beforeBossCounter++;
+	}
+	if (beforeBossCounter == 200) {
+		setBossAppearFlag(true);
+	}
+
+	if (!getBossFlag()) {
+		afterBossCounter++;
+	}
+	if (afterBossCounter == 200) {
+		Fade(SCENE_RESULT);
+	}
 }
 
 void gameDraw() {

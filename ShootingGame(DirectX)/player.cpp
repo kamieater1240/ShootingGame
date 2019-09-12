@@ -198,7 +198,7 @@ void playerMove() {
 		}
 
 		if (Keyboard_IsPress(DIK_LSHIFT)) {
-			move *= 0.5f;
+			move *= 0.3f;
 			isMovingSlow = true;
 		}
 		else

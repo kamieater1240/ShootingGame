@@ -1,7 +1,7 @@
 #ifndef ENEMY_H_
 #define ENEMY_H_
 
-#define ENEMY_NUM  20
+#define ENEMY_NUM  26
 #define ENEMY_SNUM 50
 
 #include "main.h"
@@ -86,6 +86,8 @@ int  getEnemyInTime(int index);
 int  getEnemyItemType(int index);
 void setEnemyHp(int index, int num);
 int  getEnemyHP(int index);
+int  getEnemyLeft();
+void setEnemyLeft(int num);
 
 #endif // !ENEMY_H_
 

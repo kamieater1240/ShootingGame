@@ -46,6 +46,8 @@ void checkCollisionAll() {
 						if (getEnemyHP(j) == 0) {
 							//set deadFlag to true
 							setEnemyDeadFlag(j);
+							//decrease enemyLeft
+							setEnemyLeft(1);
 							//play enemy destroy sound effect
 							PlaySound(SOUND_LABEL_SE_EXPLOSION);
 							//get points
@@ -160,7 +162,7 @@ void checkBossCollision() {
 	//boss's collision between player's bullets
 	for (int i = 0; i < PSHOT_NUM; i++) {
 		if (getPlayerShotPosition(i, &pBulletPositionX, &pBulletPositionY)) {
-			if (getBossFlag() && !getBossInvincibleFlag()) {
+			if (getBossFlag() && getBossAppearFlag() && !getBossInvincibleFlag()) {
 				getBossPosition(&bPositionX, &bPositionY);
 				Circle pBullet, bossObj;
 				pBullet.position.x = pBulletPositionX;

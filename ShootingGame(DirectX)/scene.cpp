@@ -21,8 +21,6 @@ void SetScene(SCENE_STATE g_Scene) {
 		break;
 	case(SCENE_RESULT):
 		break;
-	case(SCENE_END):
-		break;
 	}
 
 	Scene_Now = g_Scene;
@@ -38,8 +36,6 @@ void SetScene(SCENE_STATE g_Scene) {
 		gameInit();
 		break;
 	case(SCENE_RESULT):
-		break;
-	case(SCENE_END):
 		break;
 	}
 }
