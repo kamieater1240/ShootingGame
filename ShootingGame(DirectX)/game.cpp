@@ -121,7 +121,7 @@ void gameUpdate() {
 	if (getEnemyLeft() == 0) {
 		beforeBossCounter++;
 	}
-	if (beforeBossCounter == 200) {
+	if (beforeBossCounter == 400) {
 		setBossAppearFlag(true);
 		StopSound(SOUND_LABEL_STAGEBGM);
 		PlaySound(SOUND_LABEL_BOSSBGM);
@@ -131,7 +131,7 @@ void gameUpdate() {
 	if (!getBossFlag()) {
 		afterBossCounter++;
 
-		if (afterBossCounter == 200) {
+		if (afterBossCounter == 400) {
 			Fade(SCENE_RESULT);
 		}
 	}
@@ -139,7 +139,7 @@ void gameUpdate() {
 	if (getPlayerLife() == 0) {
 		afterBossCounter++;
 
-		if (afterBossCounter == 200) {
+		if (afterBossCounter == 400) {
 			kamokuRyunen = true;
 			Fade(SCENE_RESULT);
 		}

@@ -41,7 +41,10 @@ void readENEMYDATA() {
 	int row = 0;
 
 	memset(buf, 0, sizeof(buf));
-	fp = fopen("ENEMYDATA1.csv", "r");
+	if(getGameDifficulty() == DIFFICULTY_EASY)
+		fp = fopen("ENEMYDATA_EASY.csv", "r");
+	else
+		fp = fopen("ENEMYDATA_HARD.csv", "r");
 
 	//ƒwƒbƒ_“Ç‚Ý”ò‚Î‚·
 	while (1) {

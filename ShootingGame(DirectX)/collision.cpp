@@ -55,7 +55,8 @@ void checkCollisionAll() {
 							//item appears
 							for (int k = 0; k < ITEM_NUM; k++) {
 								if (!getItemFlag(k)) {
-									setItemFlag(k, ePositionX, ePositionY, getEnemyItemType(j));
+									setItemFlag(k, ePositionX - 2.5f, ePositionY, getEnemyItemType(j));
+									setItemFlag(k, ePositionX + 2.5f, ePositionY, getEnemyItemType(j));
 									break;
 								}
 							}
@@ -183,7 +184,7 @@ void checkBossCollision() {
 					//“¾“_‚ð‰Á‚¦‚é
 					setScoreData(CURRENT_SCORE, 512);
 
-					
+
 					//Change to move pattern 1
 					if (BOSS_HP * 2 / 3.f >= bossHp && getPrevBossHp() > BOSS_HP * 2 / 3.f) {
 						setScoreData(CURRENT_SCORE, 1024);
@@ -192,7 +193,10 @@ void checkBossCollision() {
 							if (!getItemFlag(k)) {
 								itemPositionX = bPositionX + ((rand() % 100) - 51);
 								itemPositionY = bPositionY + ((rand() % 100) - 51);
-								setItemFlag(k, itemPositionX, itemPositionY, rand() % 3);
+								if (itemNum == 0 && itemNum == 1)
+									setItemFlag(k, itemPositionX, itemPositionY, 2);
+								else
+									setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
 
 								itemNum++;
 								if (itemNum == 10) {
@@ -210,7 +214,10 @@ void checkBossCollision() {
 							if (!getItemFlag(k)) {
 								itemPositionX = bPositionX + ((rand() % 100) - 51);
 								itemPositionY = bPositionY + ((rand() % 100) - 51);
-								setItemFlag(k, itemPositionX, itemPositionY, rand() % 3);
+								if (itemNum == 0 && itemNum == 1)
+									setItemFlag(k, itemPositionX, itemPositionY, 2);
+								else
+									setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
 
 								itemNum++;
 								if (itemNum == 10) {
@@ -221,7 +228,7 @@ void checkBossCollision() {
 						}
 						setBossDamageSetting();
 					}
-					
+
 
 					//If the boss died
 					if (bossHp <= 0) {
@@ -236,10 +243,10 @@ void checkBossCollision() {
 							if (!getItemFlag(k)) {
 								itemPositionX = bPositionX + ((rand() % 100) - 51);
 								itemPositionY = bPositionY + ((rand() % 100) - 51);
-								setItemFlag(k, itemPositionX, itemPositionY, rand() % 3);
+								setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
 
 								itemNum++;
-								if (itemNum == 20) {
+								if (itemNum == 10) {
 									itemNum = 0;
 									break;
 								}

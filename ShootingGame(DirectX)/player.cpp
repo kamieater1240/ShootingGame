@@ -60,7 +60,7 @@ void playerInit() {
 
 	move = 1.f;
 	shootingCD = 1.f;
-	power = 6;
+	power = 7;
 	tamaInit();
 
 	life = 3;
