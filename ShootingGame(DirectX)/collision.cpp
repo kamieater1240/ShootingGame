@@ -67,8 +67,8 @@ void checkCollisionAll() {
 		}
 	}
 
-	//player's collision between enemy's bulltes or the items
-	if (!getPlayerDamageFlag() && !getPlayerInvincibleFlag()) {
+	//player's collision between enemy's bulltes
+	if (!getPlayerDamageFlag() && !getPlayerInvincibleFlag() && getPlayerLife() > 0) {
 		getPlayerPosition(&pPositionX, &pPositionY);
 
 		//Check the collision between enemies' bullets and the player
@@ -109,6 +109,11 @@ void checkCollisionAll() {
 				}
 			}
 		}
+	}
+
+	//Player's collision between the items
+	if (!getPlayerDamageFlag() && getPlayerLife() > 0) {
+		getPlayerPosition(&pPositionX, &pPositionY);
 
 		//Check the collision between player and the items
 		float itemX, itemY;
@@ -260,8 +265,8 @@ void checkBossCollision() {
 		}
 	}
 
-	//player's collision between boss's bullets or the items
-	if (!getPlayerDamageFlag() && !getPlayerInvincibleFlag()) {
+	//player's collision between boss's bullets
+	if (!getPlayerDamageFlag() && !getPlayerInvincibleFlag() && getPlayerLife() > 0) {
 		getPlayerPosition(&pPositionX, &pPositionY);
 
 		for (int i = 0; i < BOSS_SHOTNUM; i++) {
@@ -302,7 +307,12 @@ void checkBossCollision() {
 
 			}
 		}
+	}
 
+	//Player's collision between the items
+	if (!getPlayerDamageFlag() && getPlayerLife() > 0) {
+		getPlayerPosition(&pPositionX, &pPositionY);
+		
 		//Check the collision between player and the items
 		float itemX, itemY;
 		for (int i = 0; i < ITEM_NUM; i++) {

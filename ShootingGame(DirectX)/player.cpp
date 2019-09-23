@@ -215,7 +215,7 @@ void playerMove() {
 		if (Keyboard_IsPress(DIK_DOWN))
 			g_player_position.y += PLAYER_DEFAULT_SPEED * move;
 	}
-	else {
+	else if (damageFlag && life > 0) {
 		g_player_position.y -= 2.f;
 	}
 }

@@ -20,6 +20,8 @@ static int hardTexID, hardGlowTexID;
 //Menu
 bool inMenu, difficultyChoose;
 int  selected;
+int  animCounter;
+bool animSelect, animEnter;
 
 //Exit game bool
 bool exitGame;
@@ -48,6 +50,9 @@ void titleInit() {
 	inMenu = true;
 	difficultyChoose = false;
 	selected = 0;
+	animCounter = 0;
+	animSelect = false;
+	animEnter = false;
 	exitGame = false;
 
 	PlaySound(SOUND_LABEL_TITLEBGM);
@@ -58,11 +63,13 @@ void titleUninit() {
 }
 
 void titleUpdate() {
+
 	if (Keyboard_IsTrigger(DIK_UP)) {			//Up
 		selected--;
 		if (selected < 0)
 			selected = 1;
 
+		animSelect = true;
 		PlaySound(SOUND_LABEL_SE_SELECT);
 	}
 	if (Keyboard_IsTrigger(DIK_DOWN)) {			//Down
@@ -70,6 +77,7 @@ void titleUpdate() {
 		if (selected > 1)
 			selected = 0;
 
+		animSelect = true;
 		PlaySound(SOUND_LABEL_SE_SELECT);
 	}
 	if (Keyboard_IsTrigger(DIK_RETURN)) {		//Press Enter
@@ -85,13 +93,14 @@ void titleUpdate() {
 			}
 		}
 		else if (difficultyChoose) {
+			animEnter = true;
+
 			if (selected == 0) {				//Easy Mode
 				setGameDifficulty(DIFFICULTY_EASY);
 			}
 			else if (selected == 1) {			//Hard Mode
 				setGameDifficulty(DIFFICULTY_HARD);
 			}
-			Fade(SCENE_GAME);
 		}
 	}
 	if (Keyboard_IsTrigger(DIK_ESCAPE)) {		//Press ESC
@@ -112,6 +121,26 @@ void titleUpdate() {
 			PlaySound(SOUND_LABEL_SE_CANCEL);
 		}
 	}
+
+	if (difficultyChoose) {
+		if (animEnter) {
+			if (animCounter == 21)
+				Fade(SCENE_GAME);
+		}
+	}
+
+	if (animSelect) {
+		animCounter++;
+
+		if (animCounter % 4 == 0) {
+			animCounter = 0;
+			animSelect = false;
+		}
+	}
+
+	if (animEnter) {
+		animCounter++;
+	}
 }
 
 void titleDraw() {
@@ -119,22 +148,36 @@ void titleDraw() {
 
 	if (inMenu) {
 		if (selected == 0) {
-			Sprite_Draw(startGlowTexID, 1050.f, 500.f);
+			Sprite_Draw(startGlowTexID, 1050.f - (animCounter % 3) * 10.f, 500.f);
 			Sprite_Draw(exitTexID, 1050.f, 700.f);
 		}
 		else if (selected == 1) {
 			Sprite_Draw(startTexID, 1050.f, 500.f);
-			Sprite_Draw(exitGlowTexID, 1050.f, 700.f);
+			Sprite_Draw(exitGlowTexID, 1050.f - (animCounter % 3) * 10.f, 700.f);
 		}
 	}
 	else if (difficultyChoose) {
 		if (selected == 0) {
-			Sprite_Draw(easyGlowTexID, 1050.f, 500.f);
-			Sprite_Draw(hardTexID, 1050.f, 700.f);
+			if (!animEnter) {		//Normal Phase
+				Sprite_Draw(easyGlowTexID, 1050.f - (animCounter % 3) * 10.f, 500.f);
+				Sprite_Draw(hardTexID, 1050.f, 700.f);
+			}
+			else {					//When press enter, do the animation
+				if (animCounter % 3 == 0)
+					Sprite_Draw(easyGlowTexID, 1050.f, 500.f);
+				Sprite_Draw(hardTexID, 1050.f, 700.f);
+			}
 		}
 		else if (selected == 1) {
-			Sprite_Draw(easyTexID, 1050.f, 500.f);
-			Sprite_Draw(hardGlowTexID, 1050.f, 700.f);
+			if (!animEnter) {		//Normal Phase
+				Sprite_Draw(easyTexID, 1050.f, 500.f);
+				Sprite_Draw(hardGlowTexID, 1050.f - (animCounter % 3) * 10.f, 700.f);
+			}
+			else {					//When press enter, do the animation
+				Sprite_Draw(easyTexID, 1050.f, 500.f);
+				if (animCounter % 3 == 0)
+					Sprite_Draw(hardGlowTexID, 1050.f, 700.f);
+			}
 		}
 	}
 }
