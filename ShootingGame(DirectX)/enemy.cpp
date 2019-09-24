@@ -11,6 +11,7 @@
 #include "input.h"
 #include "game.h"
 #include "player.h"
+#include "sound.h"
 #include "debug_font.h"
 
 static int g_enemy_textureID;
@@ -30,21 +31,23 @@ void enemyInit() {
 	//Read enemy data from file
 	readENEMYDATA();
 
-	enemyLeft = ENEMY_NUM;
+	//enemyLeft = ENEMY_NUM;
 }
 
 void readENEMYDATA() {
-	FILE *fp;
+	FILE *fp = nullptr;
 	char buf[100];
 	int c;
 	int col = 1;
 	int row = 0;
 
 	memset(buf, 0, sizeof(buf));
-	if(getGameDifficulty() == DIFFICULTY_EASY)
+	if (getGameDifficulty() == DIFFICULTY_EASY)
 		fp = fopen("ENEMYDATA_EASY.csv", "r");
-	else
+	else if (getGameDifficulty() == DIFFICULTY_HARD)
 		fp = fopen("ENEMYDATA_HARD.csv", "r");
+	else if (getGameDifficulty() == DIFFICULTY_LUNATIC)
+		return;
 
 	//ヘッダ読み飛ばす
 	while (1) {
@@ -89,12 +92,13 @@ void readENEMYDATA() {
 		if (c == '\n') {
 			col = 1;
 			row++;
+			enemyLeft++;
 		}
 	}
 
 out:
 	//敵クラス生成
-	for (int i = 0; i < ENEMY_NUM; i++) {
+	for (int i = 0; i < enemyLeft; i++) {
 		enemy[i].width = 64.f;
 		enemy[i].height = 64.f;
 
@@ -144,7 +148,6 @@ out:
 void enemyUpdate() {
 	enemyMove();
 	enemyShot();
-	//enemy.count++;
 	for (int i = 0; i < ENEMY_NUM; i++) {
 		enemy[i].count++;
 	}
@@ -287,6 +290,9 @@ void enemyShot() {
 
 						if (enemy[i].sCount == 160)
 							enemy[i].sCount = 0;
+
+						//Play enemy shot SE
+						PlaySound(SOUND_LABEL_SE_ESHOT);
 					}
 					break;
 				case 1: //Each bullet will shoot straight at the player's direction, calculate every time when shooting bullet
@@ -302,6 +308,9 @@ void enemyShot() {
 								break;
 							}
 						}
+
+						//Play enemy shot SE
+						PlaySound(SOUND_LABEL_SE_ESHOT);
 					}
 					break;
 				case 2: //Shoot 3 straight bullets
@@ -331,6 +340,9 @@ void enemyShot() {
 								}
 							}
 						}
+
+						//Play enemy shot SE
+						PlaySound(SOUND_LABEL_SE_ESHOT);
 					}
 					break;
 				case 3: //Shoot randomly
@@ -349,6 +361,9 @@ void enemyShot() {
 								break;
 							}
 						}
+
+						//Play enemy shot SE
+						PlaySound(SOUND_LABEL_SE_ESHOT);
 					}
 					break;
 				case 4: //Shoot several bullets each time at player's direction, calculate the direction befor shooting once 
@@ -366,6 +381,9 @@ void enemyShot() {
 								break;
 							}
 						}
+
+						//Play enemy shot SE
+						PlaySound(SOUND_LABEL_SE_ESHOT);
 					}
 					break;
 				default: break;

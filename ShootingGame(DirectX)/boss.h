@@ -1,7 +1,8 @@
 #ifndef BOSS_H_
 #define BOSS_H_
 
-#define BOSS_HP 1000
+#define BOSS_HP 2000
+#define BOSS_LUNA_HP 4000
 
 void bossInit();
 void bossDraw();
@@ -12,6 +13,7 @@ void bossAppear();
 void bossMovePattern1();
 void bossMovePattern2();
 void bossMovePattern3();
+void bossMovePattern4();
 void setBossMovePattern(int pattern);
 void bossShot();
 void setBossShotPattern(int pattern);

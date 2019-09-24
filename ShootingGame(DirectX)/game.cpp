@@ -27,7 +27,7 @@ float g_FPS;					//FPS
 
 static int g_BG_textureID;
 static int g_gameBG_textureID;
-static int easyGlowTexID, hardGlowTexID;
+static int easyGlowTexID, hardGlowTexID, lunaGlowTexID;
 
 static GAME_DIFFICULTY g_game_difficulty;
 float gameBG1Y, gameBG2Y;
@@ -48,11 +48,13 @@ void gameInit() {
 	Texture_SetLoadFile("Assets/Textures/gameBG.png", GAME_WIDTH, GAME_HEIGHT);
 	Texture_SetLoadFile("Assets/Textures/easy_glow.png", 470, 162);
 	Texture_SetLoadFile("Assets/Textures/hard_glow.png", 470, 162);
+	Texture_SetLoadFile("Assets/Textures/lunatic_glow.png", 470, 162);
 	Texture_Load();
 	g_BG_textureID = Texture_GetID("Assets/Textures/background2.png");
 	g_gameBG_textureID = Texture_GetID("Assets/Textures/gameBG.png");
 	easyGlowTexID = Texture_GetID("Assets/Textures/easy_glow.png");
 	hardGlowTexID = Texture_GetID("Assets/Textures/hard_glow.png");
+	lunaGlowTexID = Texture_GetID("Assets/Textures/lunatic_glow.png");
 
 	gameBG1Y = SCREEN_HEIGHT / 2.f;
 	gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
@@ -71,16 +73,21 @@ void gameInit() {
 	pDeadEffectInit();
 	explosionInit();
 
-	PlaySound(SOUND_LABEL_STAGEBGM);
+	if (getGameDifficulty() != DIFFICULTY_LUNATIC)
+		PlaySound(SOUND_LABEL_STAGEBGM);
 }
 
 void gameUninit() {
 	if (kamokuRyunen && !getBossAppearFlag())
 		StopSound(SOUND_LABEL_STAGEBGM);
-	else if(kamokuRyunen && getBossAppearFlag())
+	else if (kamokuRyunen && getBossAppearFlag()) {
 		StopSound(SOUND_LABEL_BOSSBGM);
-	else if(!kamokuRyunen)
+		StopSound(SOUND_LABEL_BOSSLUNABGM);
+	}
+	else if (!kamokuRyunen) {
 		StopSound(SOUND_LABEL_BOSSBGM);
+		StopSound(SOUND_LABEL_BOSSLUNABGM);
+	}
 }
 
 void gameUpdate() {
@@ -103,28 +110,39 @@ void gameUpdate() {
 		gameBG2Y = (SCREEN_HEIGHT / 2.f) - Texture_GetWidth(g_gameBG_textureID);
 
 	itemUpdate();
+
 	playerUpdate();
-	enemyUpdate();
+
+	if (getGameDifficulty() != DIFFICULTY_LUNATIC)
+		enemyUpdate();
+
 	scoreBoardUpdate();
 
 	if (getBossAppearFlag())
 		bossMove();
 
+	//プレイヤー死亡エフェクト
 	if (pDeadEffectGetFlag())
 		pDeadEffectUpdate();
 
 	explosionUpdate();
 
+	//当たり判定
 	checkCollisionAll();
 	checkBossCollision();
 
+	//エネミー数チェック、0ならボスカウンターがカウントスタート
 	if (getEnemyLeft() == 0) {
 		beforeBossCounter++;
 	}
 	if (beforeBossCounter == 400) {
 		setBossAppearFlag(true);
 		StopSound(SOUND_LABEL_STAGEBGM);
-		PlaySound(SOUND_LABEL_BOSSBGM);
+
+		if (getGameDifficulty() != DIFFICULTY_LUNATIC)
+			PlaySound(SOUND_LABEL_BOSSBGM);
+		else
+			PlaySound(SOUND_LABEL_BOSSLUNABGM);
 	}
 
 	//Clear the Stage
@@ -172,6 +190,9 @@ void gameDraw() {
 	}
 	else if (g_game_difficulty == DIFFICULTY_HARD) {
 		Sprite_Draw(hardGlowTexID, 1050, 40, 0.3f, 0.3f);
+	}
+	else if (g_game_difficulty == DIFFICULTY_LUNATIC) {
+		Sprite_Draw(lunaGlowTexID, 1050, 40, 0.3f, 0.3f);
 	}
 }
 

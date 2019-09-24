@@ -225,7 +225,7 @@ void playerShot() {
 	//Control the how many lines of bullets being shot
 	int num = 0;
 
-	if (!damageFlag) {
+	if (!damageFlag && life > 0) {
 		//キーが押されててかつ、5ループに一回発射
 		if (Keyboard_IsPress(DIK_Z) && shotCount % 5 == 0) {
 			PlaySound(SOUND_LABEL_SE_PSHOT);

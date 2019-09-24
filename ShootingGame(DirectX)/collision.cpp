@@ -9,6 +9,7 @@
 #include "explosion.h"
 #include "scoreboard.h"
 #include "sound.h"
+#include "title.h"
 #include "game.h"
 #include "main.h"
 #include "mydirect3d.h"
@@ -189,49 +190,119 @@ void checkBossCollision() {
 					//“¾“_‚ð‰Á‚¦‚é
 					setScoreData(CURRENT_SCORE, 512);
 
+					if (getGameDifficulty() != DIFFICULTY_LUNATIC) {
+						//Change to move pattern 2
+						if (BOSS_HP * 2 / 3.f >= bossHp && getPrevBossHp() > BOSS_HP * 2 / 3.f) {
+							setScoreData(CURRENT_SCORE, 1024);
+							//Spawn items
+							for (int k = 0; k < ITEM_NUM; k++) {
+								if (!getItemFlag(k)) {
+									itemPositionX = bPositionX + ((rand() % 100) - 51);
+									itemPositionY = bPositionY + ((rand() % 100) - 51);
+									if (itemNum == 0 || itemNum == 1)
+										setItemFlag(k, itemPositionX, itemPositionY, 2);
+									else
+										setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
 
-					//Change to move pattern 1
-					if (BOSS_HP * 2 / 3.f >= bossHp && getPrevBossHp() > BOSS_HP * 2 / 3.f) {
-						setScoreData(CURRENT_SCORE, 1024);
-						//Spawn items
-						for (int k = 0; k < ITEM_NUM; k++) {
-							if (!getItemFlag(k)) {
-								itemPositionX = bPositionX + ((rand() % 100) - 51);
-								itemPositionY = bPositionY + ((rand() % 100) - 51);
-								if (itemNum == 0 && itemNum == 1)
-									setItemFlag(k, itemPositionX, itemPositionY, 2);
-								else
-									setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
-
-								itemNum++;
-								if (itemNum == 10) {
-									itemNum = 0;
-									break;
+									itemNum++;
+									if (itemNum == 10) {
+										itemNum = 0;
+										break;
+									}
 								}
 							}
+							setBossDamageSetting();
 						}
-						setBossDamageSetting();
+						//Change to move pattern 3
+						else if (BOSS_HP / 3.f >= bossHp && getPrevBossHp() > BOSS_HP / 3.f) {
+							setScoreData(CURRENT_SCORE, 1024);
+							//Spawn items
+							for (int k = 0; k < ITEM_NUM; k++) {
+								if (!getItemFlag(k)) {
+									itemPositionX = bPositionX + ((rand() % 100) - 51);
+									itemPositionY = bPositionY + ((rand() % 100) - 51);
+									if (itemNum == 0 || itemNum == 1)
+										setItemFlag(k, itemPositionX, itemPositionY, 2);
+									else
+										setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
+
+									itemNum++;
+									if (itemNum == 10) {
+										itemNum = 0;
+										break;
+									}
+								}
+							}
+							setBossDamageSetting();
+						}
 					}
-					else if (BOSS_HP / 3.f >= bossHp && getPrevBossHp() > BOSS_HP / 3.f) {
-						setScoreData(CURRENT_SCORE, 1024);
-						//Spawn items
-						for (int k = 0; k < ITEM_NUM; k++) {
-							if (!getItemFlag(k)) {
-								itemPositionX = bPositionX + ((rand() % 100) - 51);
-								itemPositionY = bPositionY + ((rand() % 100) - 51);
-								if (itemNum == 0 && itemNum == 1)
-									setItemFlag(k, itemPositionX, itemPositionY, 2);
-								else
-									setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
+					else {
+						//Change to move pattern 2
+						if (BOSS_HP * 3 / 4.f >= bossHp && getPrevBossHp() > BOSS_HP * 3 / 4.f) {
+							setScoreData(CURRENT_SCORE, 1024);
+							//Spawn items
+							for (int k = 0; k < ITEM_NUM; k++) {
+								if (!getItemFlag(k)) {
+									itemPositionX = bPositionX + ((rand() % 100) - 51);
+									itemPositionY = bPositionY + ((rand() % 100) - 51);
+									if (itemNum == 0 || itemNum == 1)
+										setItemFlag(k, itemPositionX, itemPositionY, 2);
+									else
+										setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
 
-								itemNum++;
-								if (itemNum == 10) {
-									itemNum = 0;
-									break;
+									itemNum++;
+									if (itemNum == 15) {
+										itemNum = 0;
+										break;
+									}
 								}
 							}
+							setBossDamageSetting();
 						}
-						setBossDamageSetting();
+						//Change to move pattern 3
+						else if (BOSS_HP * 2 / 4.f >= bossHp && getPrevBossHp() > BOSS_HP * 2 / 4.f) {
+							setScoreData(CURRENT_SCORE, 1024);
+							//Spawn items
+							for (int k = 0; k < ITEM_NUM; k++) {
+								if (!getItemFlag(k)) {
+									itemPositionX = bPositionX + ((rand() % 100) - 51);
+									itemPositionY = bPositionY + ((rand() % 100) - 51);
+									if (itemNum == 0 || itemNum == 1)
+										setItemFlag(k, itemPositionX, itemPositionY, 2);
+									else
+										setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
+
+									itemNum++;
+									if (itemNum == 15) {
+										itemNum = 0;
+										break;
+									}
+								}
+							}
+							setBossDamageSetting();
+						}
+						//Change to move pattern 4
+						else if (BOSS_HP / 4.f >= bossHp && getPrevBossHp() > BOSS_HP / 4.f) {
+							setScoreData(CURRENT_SCORE, 1024);
+							//Spawn items
+							for (int k = 0; k < ITEM_NUM; k++) {
+								if (!getItemFlag(k)) {
+									itemPositionX = bPositionX + ((rand() % 100) - 51);
+									itemPositionY = bPositionY + ((rand() % 100) - 51);
+									if (itemNum == 0 || itemNum == 1)
+										setItemFlag(k, itemPositionX, itemPositionY, 2);
+									else
+										setItemFlag(k, itemPositionX, itemPositionY, rand() % 2);
+
+									itemNum++;
+									if (itemNum == 15) {
+										itemNum = 0;
+										break;
+									}
+								}
+							}
+							setBossDamageSetting();
+						}
 					}
 
 
@@ -259,6 +330,10 @@ void checkBossCollision() {
 						}
 						//Play explosion SE
 						PlaySound(SOUND_LABEL_SE_BOSSDEATH);
+
+						//Unlock lunatic mode if hard mode was cleared
+						if (getGameDifficulty() == DIFFICULTY_HARD)
+							setLunaLock(false);
 					}
 				}
 			}
@@ -277,15 +352,16 @@ void checkBossCollision() {
 				switch (bossShotType)
 				{
 				case 0:
-					bBullet.radius = 18;
+					bBullet.radius = 15;
 					break;
 				case 1:
-					bBullet.radius = 18;
+					bBullet.radius = 15;
 					break;
 				case 2:
-					bBullet.radius = 21;
+					bBullet.radius = 18;
 					break;
 				case 3:
+					bBullet.radius = 3;
 					break;
 				default: break;
 				}

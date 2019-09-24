@@ -5,7 +5,8 @@ extern int g_FrameCount;
 
 enum GAME_DIFFICULTY {
 	DIFFICULTY_EASY,
-	DIFFICULTY_HARD
+	DIFFICULTY_HARD,
+	DIFFICULTY_LUNATIC
 };
 
 void gameInit();

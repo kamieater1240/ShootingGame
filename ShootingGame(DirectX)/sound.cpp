@@ -38,6 +38,7 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{"Assets/Sounds/Title.wav", -1},			// Title BGM
 	{"Assets/Sounds/Stage4.wav", -1},			// Stage BGM
 	{"Assets/Sounds/Boss.wav", -1},				// Boss BGM
+	{"Assets/Sounds/Boss_Luna.wav", -1},		// Boss Lunatic BGM
 	{"Assets/Sounds/PShot.wav", 0},				// プレイヤー弾発射音
 	{"Assets/Sounds/Eshot.wav", 0},				// エネミー弾発射音
 	{"Assets/Sounds/Explosion.wav", 0},			// 爆発音

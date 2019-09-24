@@ -6,5 +6,7 @@ void titleUninit();
 void titleUpdate();
 void titleDraw();
 bool getExitGameBool();
+void setLunaLock(bool flag);
+bool getLunaLock();
 
 #endif // !TITLE_H_

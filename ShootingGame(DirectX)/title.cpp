@@ -16,9 +16,10 @@ static int startTexID, startGlowTexID;
 static int exitTexID, exitGlowTexID;
 static int easyTexID, easyGlowTexID;
 static int hardTexID, hardGlowTexID;
+static int lunaTexID, lunaLockTexID, lunaGlowTexID;
 
 //Menu
-bool inMenu, difficultyChoose;
+bool inMenu, difficultyChoose, lunaIsLocked;
 int  selected;
 int  animCounter;
 bool animSelect, animEnter;
@@ -36,6 +37,9 @@ void titleInit() {
 	Texture_SetLoadFile("Assets/Textures/easy_glow.png", 470, 162);
 	Texture_SetLoadFile("Assets/Textures/hard.png", 452, 142);
 	Texture_SetLoadFile("Assets/Textures/hard_glow.png", 470, 162);
+	Texture_SetLoadFile("Assets/Textures/lunatic.png", 452, 142);
+	Texture_SetLoadFile("Assets/Textures/lunatic_lock.png", 452, 142);
+	Texture_SetLoadFile("Assets/Textures/lunatic_glow.png", 470, 162);
 	Texture_Load();
 	titleTexID = Texture_GetID("Assets/Textures/title.png");
 	startTexID = Texture_GetID("Assets/Textures/start.png");
@@ -46,6 +50,9 @@ void titleInit() {
 	easyGlowTexID = Texture_GetID("Assets/Textures/easy_glow.png");
 	hardTexID = Texture_GetID("Assets/Textures/hard.png");
 	hardGlowTexID = Texture_GetID("Assets/Textures/hard_glow.png");
+	lunaTexID = Texture_GetID("Assets/Textures/lunatic.png");
+	lunaLockTexID = Texture_GetID("Assets/Textures/lunatic_lock.png");
+	lunaGlowTexID = Texture_GetID("Assets/Textures/lunatic_glow.png");
 
 	inMenu = true;
 	difficultyChoose = false;
@@ -66,16 +73,34 @@ void titleUpdate() {
 
 	if (Keyboard_IsTrigger(DIK_UP)) {			//Up
 		selected--;
-		if (selected < 0)
-			selected = 1;
+
+		if (inMenu) {
+			if (selected < 0)
+				selected = 1;
+		}
+		else if(difficultyChoose) {
+			if (selected < 0 && lunaIsLocked)
+				selected = 1;
+			else if (selected < 0 && !lunaIsLocked)
+				selected = 2;
+		}
 
 		animSelect = true;
 		PlaySound(SOUND_LABEL_SE_SELECT);
 	}
 	if (Keyboard_IsTrigger(DIK_DOWN)) {			//Down
 		selected++;
-		if (selected > 1)
-			selected = 0;
+
+		if (inMenu) {
+			if (selected > 1)
+				selected = 0;
+		}
+		else if (difficultyChoose) {
+			if (selected > 1 && lunaIsLocked)
+				selected = 0;
+			else if (selected > 2)
+				selected = 0;
+		}
 
 		animSelect = true;
 		PlaySound(SOUND_LABEL_SE_SELECT);
@@ -101,6 +126,9 @@ void titleUpdate() {
 			else if (selected == 1) {			//Hard Mode
 				setGameDifficulty(DIFFICULTY_HARD);
 			}
+			else if (selected == 2) {			//Lunatic Mode
+				setGameDifficulty(DIFFICULTY_LUNATIC);
+			}
 		}
 	}
 	if (Keyboard_IsTrigger(DIK_ESCAPE)) {		//Press ESC
@@ -118,6 +146,7 @@ void titleUpdate() {
 		else if (difficultyChoose) {
 			difficultyChoose = false;
 			inMenu = true;
+			selected = 0;
 			PlaySound(SOUND_LABEL_SE_CANCEL);
 		}
 	}
@@ -159,24 +188,57 @@ void titleDraw() {
 	else if (difficultyChoose) {
 		if (selected == 0) {
 			if (!animEnter) {		//Normal Phase
-				Sprite_Draw(easyGlowTexID, 1050.f - (animCounter % 3) * 10.f, 500.f);
-				Sprite_Draw(hardTexID, 1050.f, 700.f);
+				Sprite_Draw(easyGlowTexID, 1050.f - (animCounter % 3) * 10.f, 400.f);
+				Sprite_Draw(hardTexID, 1050.f, 600.f);
+
+				if (lunaIsLocked)
+					Sprite_Draw(lunaLockTexID, 1050.f, 800.f);
+				else
+					Sprite_Draw(lunaTexID, 1050.f, 800.f);
 			}
 			else {					//When press enter, do the animation
 				if (animCounter % 3 == 0)
-					Sprite_Draw(easyGlowTexID, 1050.f, 500.f);
-				Sprite_Draw(hardTexID, 1050.f, 700.f);
+					Sprite_Draw(easyGlowTexID, 1050.f, 400.f);
+				Sprite_Draw(hardTexID, 1050.f, 600.f);
+
+				if (lunaIsLocked)
+					Sprite_Draw(lunaLockTexID, 1050.f, 800.f);
+				else
+					Sprite_Draw(lunaTexID, 1050.f, 800.f);
 			}
 		}
 		else if (selected == 1) {
 			if (!animEnter) {		//Normal Phase
-				Sprite_Draw(easyTexID, 1050.f, 500.f);
-				Sprite_Draw(hardGlowTexID, 1050.f - (animCounter % 3) * 10.f, 700.f);
+				Sprite_Draw(easyTexID, 1050.f, 400.f);
+				Sprite_Draw(hardGlowTexID, 1050.f - (animCounter % 3) * 10.f, 600.f);
+
+				if (lunaIsLocked)
+					Sprite_Draw(lunaLockTexID, 1050.f, 800.f);
+				else
+					Sprite_Draw(lunaTexID, 1050.f, 800.f);
 			}
 			else {					//When press enter, do the animation
-				Sprite_Draw(easyTexID, 1050.f, 500.f);
+				Sprite_Draw(easyTexID, 1050.f, 400.f);
 				if (animCounter % 3 == 0)
-					Sprite_Draw(hardGlowTexID, 1050.f, 700.f);
+					Sprite_Draw(hardGlowTexID, 1050.f, 600.f);
+
+				if (lunaIsLocked)
+					Sprite_Draw(lunaLockTexID, 1050.f, 800.f);
+				else
+					Sprite_Draw(lunaTexID, 1050.f, 800.f);
+			}
+		}
+		else if (selected == 2) {
+			if (!animEnter) {		//Normal Phase
+				Sprite_Draw(easyTexID, 1050.f, 400.f);
+				Sprite_Draw(hardTexID, 1050.f, 600.f);
+				Sprite_Draw(lunaGlowTexID, 1050.f - (animCounter % 3) * 10.f, 800.f);
+			}
+			else {
+				Sprite_Draw(easyTexID, 1050.f, 400.f);
+				Sprite_Draw(hardTexID, 1050.f, 600.f);
+				if (animCounter % 3 == 0)
+					Sprite_Draw(lunaGlowTexID, 1050.f - (animCounter % 3) * 10.f, 800.f);
 			}
 		}
 	}
@@ -184,4 +246,12 @@ void titleDraw() {
 
 bool getExitGameBool() {
 	return exitGame;
+}
+
+void setLunaLock(bool flag) {
+	lunaIsLocked = flag;
+}
+
+bool getLunaLock() {
+	return lunaIsLocked;
 }

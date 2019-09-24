@@ -5,11 +5,13 @@
 #include "scoreboard.h"
 
 SCENE_STATE Scene_Now;
-int g_HighScore;
+int			g_HighScore;
+bool		lunaModeLocked;
 
 void sceneInit() {
 	Scene_Now = SCENE_NONE;
 	g_HighScore = 0;
+	lunaModeLocked = true;
 }
 
 void SetScene(SCENE_STATE g_Scene) {
@@ -22,6 +24,7 @@ void SetScene(SCENE_STATE g_Scene) {
 		break;
 	case(SCENE_GAME):
 		g_HighScore = getHighScore();
+		lunaModeLocked = getLunaLock();
 		gameUninit();
 		break;
 	case(SCENE_RESULT):
@@ -36,6 +39,7 @@ void SetScene(SCENE_STATE g_Scene) {
 	case(SCENE_NONE):
 		break;
 	case(SCENE_TITLE):
+		setLunaLock(lunaModeLocked);
 		titleInit();
 		break;
 	case(SCENE_GAME):

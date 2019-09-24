@@ -16,6 +16,7 @@ typedef enum
 	SOUND_LABEL_TITLEBGM = 0,		// Title BGM
 	SOUND_LABEL_STAGEBGM,			// Stage BGM
 	SOUND_LABEL_BOSSBGM,			// Boss BGM
+	SOUND_LABEL_BOSSLUNABGM,		// Boss Lunatic BGM
 	SOUND_LABEL_SE_PSHOT,			// プレイヤー弾発射音
 	SOUND_LABEL_SE_ESHOT,			// エネミー弾発射音
 	SOUND_LABEL_SE_EXPLOSION,		// 爆発音

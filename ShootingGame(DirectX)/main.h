@@ -6,7 +6,7 @@
 #define GAME_WIDTH				800
 #define GAME_HEIGHT				850
 
-#define PLAYER_INITX			400
+#define PLAYER_INITX			450
 #define PLAYER_INITY			800
 
 #define PSHOT_NUM				100
@@ -17,12 +17,12 @@
 #define TAMA_INITY				30
 #define TAMA_SHAKE				15
 
-#define BOSS_SHOTNUM			500
+#define BOSS_SHOTNUM			5000
 #define BOSS_SHAKE				20
 
 #define ITEM_NUM				100
 
-#define PLAYER_COLLISIONRAD		5
+#define PLAYER_COLLISIONRAD		3
 #define ENEMY_COLLISIONRAD		24
 #define BOSS_COLLISIONRAD		100
 #define ITEM_COLLISIONRAD		16
